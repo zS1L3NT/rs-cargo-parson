@@ -16,6 +16,11 @@ My interest in Rust is growing rapidly due to my boredom of TypeScript and Web D
 
 As of now, the Rust crate isn't available yet.
 
+## Credits
+
+I learnt how to downcast a trait object to a specific struct type from [here](https://bennetthardwick.com/rust/downcast-trait-object)<br>
+I also learnt how to make a basic JSON parser from [here](https://notes.eatonphil.com/writing-a-simple-json-parser.html) but I am improvising from the examples the author gives
+
 ## Built with
 
 -   Rust
