@@ -1,0 +1,10 @@
+{
+	"property": "value",
+	"number": -11.23e2,
+	"string": "srd\"",
+	"boolean": [false, true],
+	"array": [-11.23e2, -11.23e2, "\r\n\t", false],
+	"object": {
+		"array": [-11.23e2, -11.23e2, "$0"]
+	}
+}
