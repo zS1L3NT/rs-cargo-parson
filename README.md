@@ -19,7 +19,7 @@ As of now, the Rust crate isn't available yet.
 ## Credits
 
 I learnt how to downcast a trait object to a specific struct type from [here](https://bennetthardwick.com/rust/downcast-trait-object)<br>
-I also learnt how to make a basic JSON parser from [here](https://notes.eatonphil.com/writing-a-simple-json-parser.html) but I am improvising from the examples the author gives
+I also learnt how to make a basic JSON parser from [here](https://notes.eatonphil.com/writing-a-simple-json-parser.html). I understood and improvised the way the author wrote the Lexer and Parsers to make the JSON parser more bug free
 
 ## Built with
 
