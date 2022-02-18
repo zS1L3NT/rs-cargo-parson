@@ -1,17 +1,20 @@
 use std::collections::HashMap;
 
-use super::{
-    array::JSONArray, boolean::JSONBoolean, null::JSONNull, number::JSONNumber, string::JSONString,
-    JSONValue,
-};
+use super::{array::JSONArray, null::JSONNull, value::JSONValue};
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct JSONObject {
-    data: HashMap<String, Box<dyn JSONValue>>,
+    data: HashMap<String, JSONValue>,
 }
 
-impl JSONValue for JSONObject {
-    fn to_string(&self) -> String {
+impl JSONObject {
+    pub fn new() -> Self {
+        JSONObject {
+            data: HashMap::new(),
+        }
+    }
+
+    pub fn to_string(&self) -> String {
         let mut result = "{ ".to_string();
 
         for (key, value) in self.data.iter() {
@@ -26,16 +29,8 @@ impl JSONValue for JSONObject {
         result.push_str(" }");
         result
     }
-}
 
-impl JSONObject {
-    pub fn new() -> Self {
-        JSONObject {
-            data: HashMap::new(),
-        }
-    }
-
-    pub fn set(&mut self, key: String, value: Box<dyn JSONValue>) {
+    pub fn set(&mut self, key: String, value: JSONValue) {
         self.data.insert(key, value);
     }
 
@@ -44,16 +39,11 @@ impl JSONObject {
             return None;
         }
 
-        if !self.data[key].is::<JSONString>() {
+        if !self.data[key].is_string() {
             panic!("Value for key is not of type String: {}", key);
         }
 
-        Some(
-            self.data[key]
-                .downcast_ref::<JSONString>()
-                .unwrap()
-                .get_string(),
-        )
+        Some(self.data[key].get_string())
     }
 
     pub fn get_number(&self, key: &str) -> Option<f64> {
@@ -61,16 +51,11 @@ impl JSONObject {
             return None;
         }
 
-        if !self.data[key].is::<JSONNumber>() {
+        if !self.data[key].is_number() {
             panic!("Value for key is not of type Number: {}", key);
         }
 
-        Some(
-            self.data[key]
-                .downcast_ref::<JSONNumber>()
-                .unwrap()
-                .get_number(),
-        )
+        Some(self.data[key].get_number())
     }
 
     pub fn get_boolean(&self, key: &str) -> Option<bool> {
@@ -78,16 +63,11 @@ impl JSONObject {
             return None;
         }
 
-        if !self.data[key].is::<JSONBoolean>() {
+        if !self.data[key].is_boolean() {
             panic!("Value for key is not of type Boolean: {}", key);
         }
 
-        Some(
-            self.data[key]
-                .downcast_ref::<JSONBoolean>()
-                .unwrap()
-                .get_boolean(),
-        )
+        Some(self.data[key].get_boolean())
     }
 
     pub fn get_null(&self, key: &str) -> Option<&JSONNull> {
@@ -95,11 +75,11 @@ impl JSONObject {
             return None;
         }
 
-        if !self.data[key].is::<JSONNull>() {
+        if !self.data[key].is_null() {
             panic!("Value for key is not of type Null: {}", key);
         }
 
-        Some(self.data[key].downcast_ref::<JSONNull>().unwrap())
+        Some(self.data[key].get_null())
     }
 
     pub fn get_array(&self, key: &str) -> Option<&JSONArray> {
@@ -107,11 +87,11 @@ impl JSONObject {
             return None;
         }
 
-        if !self.data[key].is::<JSONArray>() {
+        if !self.data[key].is_array() {
             panic!("Value for key is not of type Array: {}", key);
         }
 
-        Some(self.data[key].downcast_ref::<JSONArray>().unwrap())
+        Some(self.data[key].get_array())
     }
 
     pub fn get_object(&self, key: &str) -> Option<&JSONObject> {
@@ -119,10 +99,10 @@ impl JSONObject {
             return None;
         }
 
-        if !self.data[key].is::<JSONObject>() {
+        if !self.data[key].is_object() {
             panic!("Value for key is not of type Object: {}", key);
         }
 
-        Some(self.data[key].downcast_ref::<JSONObject>().unwrap())
+        Some(self.data[key].get_object())
     }
 }

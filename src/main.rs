@@ -1,6 +1,5 @@
 use std::fs;
 
-use json::{object::JSONObject, JSONValue};
 use lexer::Lexer;
 use parser::Parser;
 
@@ -14,6 +13,7 @@ fn main() {
 
     let lexer = Lexer::new(json);
     let parser = Parser::new(lexer.get_tokens());
-    let json = parser.parse().downcast::<JSONObject>().unwrap();
-	println!("{}", json.to_string());
+    let value = parser.parse();
+    let json = value.get_object();
+    println!("{}", json.to_string());
 }

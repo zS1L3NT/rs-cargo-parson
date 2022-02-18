@@ -1,6 +1,6 @@
 use std::fmt::Display;
 
-#[derive(Debug)]
+#[derive(Debug, Clone, PartialEq)]
 pub enum Token {
     OpenCurlyBracket,
     CloseCurlyBracket,
@@ -12,23 +12,6 @@ pub enum Token {
     Number(f64),
     Boolean(bool),
     Null,
-}
-
-impl Clone for Token {
-    fn clone(&self) -> Self {
-        match self {
-            Self::OpenCurlyBracket => Self::OpenCurlyBracket,
-            Self::CloseCurlyBracket => Self::CloseCurlyBracket,
-            Self::OpenSquareBracket => Self::OpenSquareBracket,
-            Self::CloseSquareBracket => Self::CloseSquareBracket,
-            Self::Colon => Self::Colon,
-            Self::Comma => Self::Comma,
-            Self::String(string) => Self::String(string.clone()),
-            Self::Number(number) => Self::Number(*number),
-            Self::Boolean(boolean) => Self::Boolean(*boolean),
-            Self::Null => Self::Null,
-        }
-    }
 }
 
 impl Display for Token {
@@ -44,17 +27,6 @@ impl Display for Token {
             Token::Number(number) => write!(f, "{}", number),
             Token::Boolean(boolean) => write!(f, "{}", boolean),
             Token::Null => write!(f, "null"),
-        }
-    }
-}
-
-impl PartialEq for Token {
-    fn eq(&self, other: &Self) -> bool {
-        match (self, other) {
-            (Self::String(left), Self::String(right)) => left == right,
-            (Self::Number(left), Self::Number(right)) => left == right,
-            (Self::Boolean(left), Self::Boolean(right)) => left == right,
-            _ => core::mem::discriminant(self) == core::mem::discriminant(other),
         }
     }
 }

@@ -1,7 +1,7 @@
 use crate::{
     json::{
         array::JSONArray, boolean::JSONBoolean, null::JSONNull, number::JSONNumber,
-        object::JSONObject, string::JSONString, JSONValue,
+        object::JSONObject, string::JSONString, value::JSONValue,
     },
     token::Token,
 };
@@ -15,7 +15,7 @@ impl Parser {
         Parser { tokens }
     }
 
-    pub fn parse(&self) -> Box<dyn JSONValue> {
+    pub fn parse(&self) -> JSONValue {
         let mut tokens = self.tokens.clone();
 
         if let Some(first_token) = tokens.first() {
@@ -24,38 +24,38 @@ impl Parser {
                     let result = self
                         .parse_array(&mut tokens)
                         .expect("Invalid JSON: First token of array not [");
-                    Box::new(result)
+                    JSONValue::from_array(result)
                 }
                 Token::OpenCurlyBracket => {
                     let result = self
                         .parse_object(&mut tokens)
                         .expect("Invalid JSON: First token of object not {");
-                    Box::new(result)
+                    JSONValue::from_object(result)
                 }
                 Token::String(string) => {
                     if tokens.len() == 1 {
-                        Box::new(JSONString::new(string.clone()))
+                        JSONValue::from_string(JSONString::new(string.clone()))
                     } else {
                         panic!("Invalid JSON: Expected end of file after \"{}\"", string)
                     }
                 }
                 Token::Number(number) => {
                     if tokens.len() == 1 {
-                        Box::new(JSONNumber::new(*number))
+                        JSONValue::from_number(JSONNumber::new(*number))
                     } else {
                         panic!("Invalid JSON: Expected end of file after {}", number)
                     }
                 }
                 Token::Boolean(boolean) => {
                     if tokens.len() == 1 {
-                        Box::new(JSONBoolean::new(*boolean))
+                        JSONValue::from_boolean(JSONBoolean::new(*boolean))
                     } else {
                         panic!("Invalid JSON: Expected end of file after {}", boolean)
                     }
                 }
                 Token::Null => {
                     if tokens.len() == 1 {
-                        Box::new(JSONNull::new())
+                        JSONValue::from_null(JSONNull::new())
                     } else {
                         panic!("Invalid JSON: Expected end of file after null")
                     }
@@ -78,33 +78,29 @@ impl Parser {
         }
     }
 
-    fn parse_value(
-        &self,
-        tokens: &mut Vec<Token>,
-        stop_tokens: &Vec<Token>,
-    ) -> Option<Box<dyn JSONValue>> {
+    fn parse_value(&self, tokens: &mut Vec<Token>, stop_tokens: &Vec<Token>) -> Option<JSONValue> {
         if let Some(results) = self.parse_string(tokens, &stop_tokens) {
-            return Some(Box::new(results.0));
+            return Some(JSONValue::from_string(results.0));
         }
 
         if let Some(results) = self.parse_number(tokens, &stop_tokens) {
-            return Some(Box::new(results.0));
+            return Some(JSONValue::from_number(results.0));
         }
 
         if let Some(results) = self.parse_boolean(tokens, &stop_tokens) {
-            return Some(Box::new(results.0));
+            return Some(JSONValue::from_boolean(results.0));
         }
 
         if let Some(results) = self.parse_null(tokens, &stop_tokens) {
-            return Some(Box::new(results.0));
+            return Some(JSONValue::from_null(results.0));
         }
 
         if let Some(json_array) = self.parse_array(tokens) {
-            return Some(Box::new(json_array));
+            return Some(JSONValue::from_array(json_array));
         }
 
         if let Some(json_object) = self.parse_object(tokens) {
-            return Some(Box::new(json_object));
+            return Some(JSONValue::from_object(json_object));
         }
 
         return None;

@@ -1,15 +1,16 @@
-use super::{
-    boolean::JSONBoolean, null::JSONNull, number::JSONNumber, object::JSONObject,
-    string::JSONString, JSONValue,
-};
+use super::{null::JSONNull, object::JSONObject, value::JSONValue};
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct JSONArray {
-    data: Vec<Box<dyn JSONValue>>,
+    data: Vec<JSONValue>,
 }
 
-impl JSONValue for JSONArray {
-    fn to_string(&self) -> String {
+impl JSONArray {
+    pub fn new() -> Self {
+        JSONArray { data: vec![] }
+    }
+
+    pub fn to_string(&self) -> String {
         let mut result = "[ ".to_string();
 
         for value in self.data.iter() {
@@ -24,14 +25,8 @@ impl JSONValue for JSONArray {
         result.push_str(" ]");
         result
     }
-}
 
-impl JSONArray {
-    pub fn new() -> Self {
-        JSONArray { data: vec![] }
-    }
-
-    pub fn push(&mut self, value: Box<dyn JSONValue>) {
+    pub fn push(&mut self, value: JSONValue) {
         self.data.push(value);
     }
 
@@ -40,16 +35,11 @@ impl JSONArray {
             return None;
         }
 
-        if !self.data[index].is::<JSONString>() {
+        if !self.data[index].is_string() {
             panic!("Value at index is not of type String: {}", index);
         }
 
-        Some(
-            self.data[index]
-                .downcast_ref::<JSONString>()
-                .unwrap()
-                .get_string(),
-        )
+        Some(self.data[index].get_string())
     }
 
     pub fn get_number(&self, index: usize) -> Option<f64> {
@@ -57,16 +47,11 @@ impl JSONArray {
             return None;
         }
 
-        if !self.data[index].is::<JSONNumber>() {
+        if !self.data[index].is_number() {
             panic!("Value at index is not of type Number: {}", index);
         }
 
-        Some(
-            self.data[index]
-                .downcast_ref::<JSONNumber>()
-                .unwrap()
-                .get_number(),
-        )
+        Some(self.data[index].get_number())
     }
 
     pub fn get_boolean(&self, index: usize) -> Option<bool> {
@@ -74,16 +59,11 @@ impl JSONArray {
             return None;
         }
 
-        if !self.data[index].is::<JSONBoolean>() {
+        if !self.data[index].is_boolean() {
             panic!("Value at index is not of type Boolean: {}", index);
         }
 
-        Some(
-            self.data[index]
-                .downcast_ref::<JSONBoolean>()
-                .unwrap()
-                .get_boolean(),
-        )
+        Some(self.data[index].get_boolean())
     }
 
     pub fn get_null(&self, index: usize) -> Option<&JSONNull> {
@@ -91,11 +71,11 @@ impl JSONArray {
             return None;
         }
 
-        if !self.data[index].is::<JSONNull>() {
+        if !self.data[index].is_null() {
             panic!("Value at index is not of type Null: {}", index);
         }
 
-        Some(self.data[index].downcast_ref::<JSONNull>().unwrap())
+        Some(self.data[index].get_null())
     }
 
     pub fn get_array(&self, index: usize) -> Option<&JSONArray> {
@@ -103,11 +83,11 @@ impl JSONArray {
             return None;
         }
 
-        if !self.data[index].is::<JSONArray>() {
+        if !self.data[index].is_array() {
             panic!("Value at index is not of type Array: {}", index);
         }
 
-        Some(self.data[index].downcast_ref::<JSONArray>().unwrap())
+        Some(self.data[index].get_array())
     }
 
     pub fn get_object(&self, index: usize) -> Option<&JSONObject> {
@@ -115,14 +95,14 @@ impl JSONArray {
             return None;
         }
 
-        if !self.data[index].is::<JSONObject>() {
+        if !self.data[index].is_object() {
             panic!("Value at index is not of type Object: {}", index);
         }
 
-        Some(self.data[index].downcast_ref::<JSONObject>().unwrap())
+        Some(self.data[index].get_object())
     }
 
-    pub fn get_value(&self, index: usize) -> Option<&Box<dyn JSONValue>> {
+    pub fn get_value(&self, index: usize) -> Option<&JSONValue> {
         self.data.get(index)
     }
 }
