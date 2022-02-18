@@ -5,7 +5,7 @@ pub struct Lexer {
 }
 
 impl Lexer {
-    pub fn new(json: String) -> Lexer {
+    pub fn new(json: String) -> Self {
         Lexer { json }
     }
 
@@ -37,31 +37,31 @@ impl Lexer {
             let first_char = json[..1].to_string();
             match &first_char[..] {
                 " " | "\t" | "\r" | "\n" => {
-                    json = format!("{}", &json[1..]);
+                    json = json[1..].to_string();
                 }
                 "{" => {
                     tokens.push(Token::OpenCurlyBracket);
-                    json = format!("{}", &json[1..]);
+                    json = json[1..].to_string();
                 }
                 "}" => {
                     tokens.push(Token::CloseCurlyBracket);
-                    json = format!("{}", &json[1..]);
+                    json = json[1..].to_string();
                 }
                 "[" => {
                     tokens.push(Token::OpenSquareBracket);
-                    json = format!("{}", &json[1..]);
+                    json = json[1..].to_string();
                 }
                 "]" => {
                     tokens.push(Token::CloseSquareBracket);
-                    json = format!("{}", &json[1..]);
+                    json = json[1..].to_string();
                 }
                 "," => {
                     tokens.push(Token::Comma);
-                    json = format!("{}", &json[1..]);
+                    json = json[1..].to_string();
                 }
                 ":" => {
                     tokens.push(Token::Colon);
-                    json = format!("{}", &json[1..]);
+                    json = json[1..].to_string();
                 }
                 "\"" => {
                     panic!("Unexpected end of file: {}", json);
@@ -100,7 +100,7 @@ impl Lexer {
                     data.push(char);
                     escape = true;
                 } else if char == '"' {
-                    *string = format!("{}", &string[data.len() + 2..]);
+                    *string = string[data.len() + 2..].to_string();
                     return Some(Token::String(data));
                 } else {
                     data.push(char);
@@ -160,16 +160,16 @@ impl Lexer {
             return None;
         }
 
-        *string = format!("{}", &string[data.len()..]);
+        *string = string[data.len()..].to_string();
         Some(Token::Number(data.parse().unwrap()))
     }
 
     fn lex_boolean(&self, string: &mut String) -> Option<Token> {
         if string.len() > 4 && string.starts_with("true") {
-            *string = format!("{}", &string[4..]);
+            *string = string[4..].to_string();
             Some(Token::Boolean(true))
         } else if string.len() > 5 && string.starts_with("false") {
-            *string = format!("{}", &string[5..]);
+            *string = string[5..].to_string();
             Some(Token::Boolean(false))
         } else {
             None
@@ -178,7 +178,7 @@ impl Lexer {
 
     fn lex_null(&self, string: &mut String) -> Option<Token> {
         if string.len() > 4 && string.starts_with("null") {
-            *string = format!("{}", &string[4..]);
+            *string = string[4..].to_string();
             Some(Token::Null)
         } else {
             None

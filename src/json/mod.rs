@@ -1,6 +1,6 @@
-use std::{any::Any, fmt::Debug};
+use std::fmt::Debug;
 
-use downcast_rs::{Downcast, impl_downcast};
+use downcast_rs::{impl_downcast, Downcast};
 
 pub mod array;
 pub mod boolean;
@@ -11,6 +11,5 @@ pub mod string;
 
 pub trait JSONValue: Downcast + Debug {
     fn to_string(&self) -> String;
-    fn as_any(&self) -> &dyn Any;
 }
 impl_downcast!(JSONValue);

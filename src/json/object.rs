@@ -1,4 +1,4 @@
-use std::{any::Any, collections::HashMap};
+use std::collections::HashMap;
 
 use super::{
     array::JSONArray, boolean::JSONBoolean, null::JSONNull, number::JSONNumber, string::JSONString,
@@ -12,8 +12,7 @@ pub struct JSONObject {
 
 impl JSONValue for JSONObject {
     fn to_string(&self) -> String {
-        let mut result = String::new();
-        result.push_str("{ ");
+        let mut result = "{ ".to_string();
 
         for (key, value) in self.data.iter() {
             result.push_str(&format!("\"{}\": {}, ", key, value.to_string()));
@@ -27,14 +26,10 @@ impl JSONValue for JSONObject {
         result.push_str(" }");
         result
     }
-
-    fn as_any(&self) -> &dyn Any {
-        self
-    }
 }
 
 impl JSONObject {
-    pub fn new() -> JSONObject {
+    pub fn new() -> Self {
         JSONObject {
             data: HashMap::new(),
         }

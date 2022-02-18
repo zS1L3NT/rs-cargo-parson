@@ -1,5 +1,3 @@
-use std::any::Any;
-
 use super::JSONValue;
 
 #[derive(Debug)]
@@ -10,10 +8,6 @@ pub struct JSONString {
 impl JSONValue for JSONString {
     fn to_string(&self) -> String {
         format!("\"{}\"", self.data.clone())
-    }
-
-    fn as_any(&self) -> &dyn Any {
-        self
     }
 }
 

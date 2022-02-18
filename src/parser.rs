@@ -11,12 +11,12 @@ pub struct Parser {
 }
 
 impl Parser {
-    pub fn new(tokens: Vec<Token>) -> Parser {
+    pub fn new(tokens: Vec<Token>) -> Self {
         Parser { tokens }
     }
 
     pub fn parse(&self) -> Box<dyn JSONValue> {
-        let mut tokens = self.tokens.to_vec();
+        let mut tokens = self.tokens.clone();
 
         if let Some(first_token) = tokens.first() {
             match first_token {

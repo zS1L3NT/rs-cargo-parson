@@ -1,5 +1,3 @@
-use std::any::Any;
-
 use super::{
     boolean::JSONBoolean, null::JSONNull, number::JSONNumber, object::JSONObject,
     string::JSONString, JSONValue,
@@ -12,7 +10,7 @@ pub struct JSONArray {
 
 impl JSONValue for JSONArray {
     fn to_string(&self) -> String {
-        let mut result = format!("[ ");
+        let mut result = "[ ".to_string();
 
         for value in self.data.iter() {
             result.push_str(&format!("{}, ", value.to_string()));
@@ -25,10 +23,6 @@ impl JSONValue for JSONArray {
 
         result.push_str(" ]");
         result
-    }
-
-    fn as_any(&self) -> &dyn Any {
-        self
     }
 }
 

@@ -24,8 +24,8 @@ impl Clone for Token {
             Self::Colon => Self::Colon,
             Self::Comma => Self::Comma,
             Self::String(string) => Self::String(string.clone()),
-            Self::Number(number) => Self::Number(number.clone()),
-            Self::Boolean(boolean) => Self::Boolean(boolean.clone()),
+            Self::Number(number) => Self::Number(*number),
+            Self::Boolean(boolean) => Self::Boolean(*boolean),
             Self::Null => Self::Null,
         }
     }

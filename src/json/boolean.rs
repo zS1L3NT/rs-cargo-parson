@@ -1,5 +1,3 @@
-use std::any::Any;
-
 use super::JSONValue;
 
 #[derive(Debug)]
@@ -9,18 +7,14 @@ pub struct JSONBoolean {
 
 impl JSONValue for JSONBoolean {
     fn to_string(&self) -> String {
-        format!("{}", self.data)
-    }
-
-    fn as_any(&self) -> &dyn Any {
-        self
+        self.data.to_string()
     }
 }
 
 impl JSONBoolean {
-	pub fn new(data: bool) -> JSONBoolean {
-		JSONBoolean { data }
-	}
+    pub fn new(data: bool) -> Self {
+        JSONBoolean { data }
+    }
 
     pub fn get_boolean(&self) -> bool {
         self.data
