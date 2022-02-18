@@ -18,8 +18,11 @@ impl JSONValue for JSONArray {
             result.push_str(&format!("{}, ", value.to_string()));
         }
 
-        result.pop();
-        result.pop();
+        if self.data.len() > 0 {
+            result.pop();
+            result.pop();
+        }
+
         result.push_str(" ]");
         result
     }

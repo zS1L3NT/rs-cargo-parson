@@ -9,7 +9,7 @@ pub struct JSONString {
 
 impl JSONValue for JSONString {
     fn to_string(&self) -> String {
-        self.data.clone()
+        format!("\"{}\"", self.data.clone())
     }
 
     fn as_any(&self) -> &dyn Any {

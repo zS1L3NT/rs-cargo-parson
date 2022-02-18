@@ -19,8 +19,11 @@ impl JSONValue for JSONObject {
             result.push_str(&format!("\"{}\": {}, ", key, value.to_string()));
         }
 
-        result.pop();
-        result.pop();
+        if self.data.len() > 0 {
+            result.pop();
+            result.pop();
+        }
+
         result.push_str(" }");
         result
     }
