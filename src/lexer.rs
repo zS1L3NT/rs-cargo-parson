@@ -14,35 +14,23 @@ impl Lexer {
         let mut json = self.json.clone();
 
         while json.len() > 0 {
-            let result = self.lex_string(json.clone());
-            let string_token = result.0;
-            json = result.1;
-            if string_token.is_some() {
-                tokens.push(string_token.unwrap());
+            if let Some(string_token) = self.lex_string(&mut json) {
+                tokens.push(string_token);
                 continue;
             }
 
-            let result = self.lex_number(json.clone());
-            let number_token = result.0;
-            json = result.1;
-            if number_token.is_some() {
-                tokens.push(number_token.unwrap());
+            if let Some(number_token) = self.lex_number(&mut json) {
+                tokens.push(number_token);
                 continue;
             }
 
-            let result = self.lex_boolean(json.clone());
-            let boolean_token = result.0;
-            json = result.1;
-            if boolean_token.is_some() {
-                tokens.push(boolean_token.unwrap());
+            if let Some(boolean_token) = self.lex_boolean(&mut json) {
+                tokens.push(boolean_token);
                 continue;
             }
 
-            let result = self.lex_null(json.clone());
-            let null_token = result.0;
-            json = result.1;
-            if null_token.is_some() {
-                tokens.push(null_token.unwrap());
+            if let Some(null_token) = self.lex_null(&mut json) {
+                tokens.push(null_token);
                 continue;
             }
 
@@ -75,9 +63,9 @@ impl Lexer {
                     tokens.push(Token::Colon);
                     json = format!("{}", &json[1..]);
                 }
-				"\"" => {
-					panic!("Unexpected end of file: {}", json);
-				}
+                "\"" => {
+                    panic!("Unexpected end of file: {}", json);
+                }
                 char => {
                     panic!("Unexpected character: {}", char);
                 }
@@ -87,11 +75,11 @@ impl Lexer {
         tokens
     }
 
-    fn lex_string(&self, string: String) -> (Option<Token>, String) {
+    fn lex_string(&self, string: &mut String) -> Option<Token> {
         let mut data = String::new();
 
         if &string[..1] != "\"" {
-            return (None, string);
+            return None;
         }
 
         let mut escape = false;
@@ -100,27 +88,30 @@ impl Lexer {
             if escape {
                 if ['r', 'n', 't', '\\', '\"'].contains(&char) {
                     data.push(char);
-					escape = false;
+                    escape = false;
                 } else {
-                    panic!("Invalid JSON: Invalid escape of character: <{}>", char.encode_utf8(&mut [0, 0]));
+                    panic!(
+                        "Invalid JSON: Invalid escape of character: <{}>",
+                        char.encode_utf8(&mut [0, 0])
+                    );
                 }
             } else {
                 if char == '\\' {
-					data.push(char);
+                    data.push(char);
                     escape = true;
                 } else if char == '"' {
-                    let len = data.len() + 2;
-                    return (Some(Token::String(data)), format!("{}", &string[len..]));
+                    *string = format!("{}", &string[data.len() + 2..]);
+                    return Some(Token::String(data));
                 } else {
                     data.push(char);
                 }
             }
         }
 
-        (None, string)
+        None
     }
 
-    fn lex_number(&self, string: String) -> (Option<Token>, String) {
+    fn lex_number(&self, string: &mut String) -> Option<Token> {
         let mut data = String::new();
 
         for char in string.chars() {
@@ -166,31 +157,31 @@ impl Lexer {
         }
 
         if data.len() == 0 {
-            return (None, string);
+            return None;
         }
 
-        let len = data.len();
-        return (
-            Some(Token::Number(data.parse().unwrap())),
-            format!("{}", &string[len..]),
-        );
+        *string = format!("{}", &string[data.len()..]);
+        Some(Token::Number(data.parse().unwrap()))
     }
 
-    fn lex_boolean(&self, string: String) -> (Option<Token>, String) {
+    fn lex_boolean(&self, string: &mut String) -> Option<Token> {
         if string.len() > 4 && string.starts_with("true") {
-            (Some(Token::Boolean(true)), format!("{}", &string[4..]))
+            *string = format!("{}", &string[4..]);
+            Some(Token::Boolean(true))
         } else if string.len() > 5 && string.starts_with("false") {
-            (Some(Token::Boolean(false)), format!("{}", &string[5..]))
+            *string = format!("{}", &string[5..]);
+            Some(Token::Boolean(false))
         } else {
-            (None, string)
+            None
         }
     }
 
-    fn lex_null(&self, string: String) -> (Option<Token>, String) {
+    fn lex_null(&self, string: &mut String) -> Option<Token> {
         if string.len() > 4 && string.starts_with("null") {
-            (Some(Token::Null), format!("{}", &string[4..]))
+            *string = format!("{}", &string[4..]);
+            Some(Token::Null)
         } else {
-            (None, string)
+            None
         }
     }
 }
