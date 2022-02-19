@@ -8,19 +8,25 @@
 //! - JSON Boolean is parsed into a Rust bool
 //! - JSON Null is not parsable into Rust since there is no Null value
 
-pub use json::array::JSONArray;
-pub use json::boolean::JSONBoolean;
-pub use json::null::JSONNull;
-pub use json::number::JSONNumber;
-pub use json::object::JSONObject;
-pub use json::string::JSONString;
-pub use json::value::JSONType;
-pub use json::value::JSONValue;
-use token::Token;
+pub use json_array::JSONArray;
+pub use json_boolean::JSONBoolean;
+pub use json_null::JSONNull;
+pub use json_number::JSONNumber;
+pub use json_object::JSONObject;
+pub use json_string::JSONString;
+pub use json_value::JSONType;
+pub use json_value::JSONValue;
 use lexer::Lexer;
 use parser::Parser;
+use token::Token;
 
-pub mod json;
+mod json_array;
+mod json_boolean;
+mod json_null;
+mod json_number;
+mod json_object;
+mod json_string;
+mod json_value;
 mod lexer;
 mod parser;
 mod token;
