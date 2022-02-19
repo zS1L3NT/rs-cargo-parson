@@ -1,17 +1,15 @@
-use std::collections::HashMap;
+use indexmap::{indexmap, IndexMap};
 
 use crate::JSONValue;
 
 #[derive(Debug, Clone)]
 pub struct JSONObject {
-    data: HashMap<String, JSONValue>,
+    data: IndexMap<String, JSONValue>,
 }
 
 impl JSONObject {
     pub fn new() -> Self {
-        JSONObject {
-            data: HashMap::new(),
-        }
+        JSONObject { data: indexmap! {} }
     }
 
     pub fn to_string(&self) -> String {
