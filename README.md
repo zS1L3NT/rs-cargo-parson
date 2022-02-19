@@ -10,7 +10,11 @@ My interest in Rust is growing rapidly due to my boredom of TypeScript and Web D
 
 ## Features
 
--   JSON Parsing
+-   JSON Parsing into Rust types
+    -   A JSON String parses into a Rust owned string
+    -   A JSON Number parses into a Rust f64
+    -   A JSON Boolean parses into a Rust bool
+    -   A JSON Null is not parsable into Rust since there is no Null value
 
 ## Usage
 
