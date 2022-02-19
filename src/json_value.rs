@@ -2,7 +2,7 @@ use std::{fmt::Debug, str::FromStr};
 
 use crate::{
     json_err, json_error::JSONError, lexer::Lexer, parser::Parser, JSONArray, JSONBoolean,
-    JSONNull, JSONNumber, JSONObject, JSONResult, JSONString,
+    JSONNull, JSONNumber, JSONObject, JSONString,
 };
 
 #[derive(Debug, Clone)]
@@ -155,7 +155,7 @@ impl JSONValue {
     }
 
     /// Cast the JSON Value to a Rust owned string
-    pub fn get_string(&self) -> JSONResult<String> {
+    pub fn get_string(&self) -> Result<String, JSONError> {
         match &self.data {
             JSONType::String(json_string) => Ok(json_string.get_string()),
             _ => json_err!("JSONValue::get_string() called on non-string value"),
@@ -163,7 +163,7 @@ impl JSONValue {
     }
 
     /// Cast the JSON Value to a Rust f64
-    pub fn get_number(&self) -> JSONResult<f64> {
+    pub fn get_number(&self) -> Result<f64, JSONError> {
         match &self.data {
             JSONType::Number(json_number) => Ok(json_number.get_number()),
             _ => json_err!("JSONValue::get_number() called on non-number value"),
@@ -171,7 +171,7 @@ impl JSONValue {
     }
 
     /// Cast the JSON Value to a Rust bool
-    pub fn get_boolean(&self) -> JSONResult<bool> {
+    pub fn get_boolean(&self) -> Result<bool, JSONError> {
         match &self.data {
             JSONType::Boolean(json_boolean) => Ok(json_boolean.get_boolean()),
             _ => json_err!("JSONValue::get_boolean() called on non-boolean value"),
@@ -179,7 +179,7 @@ impl JSONValue {
     }
 
     /// Cast the JSON Value to JSON Null
-    pub fn get_null(&self) -> JSONResult<&JSONNull> {
+    pub fn get_null(&self) -> Result<&JSONNull, JSONError> {
         match &self.data {
             JSONType::Null(json_null) => Ok(json_null),
             _ => json_err!("JSONValue::get_null() called on non-null value"),
@@ -187,7 +187,7 @@ impl JSONValue {
     }
 
     /// Cast the JSON Value to JSON Array
-    pub fn get_array(&self) -> JSONResult<&JSONArray> {
+    pub fn get_array(&self) -> Result<&JSONArray, JSONError> {
         match &self.data {
             JSONType::Array(json_array) => Ok(json_array),
             _ => json_err!("JSONValue::get_array() called on non-array value"),
@@ -195,7 +195,7 @@ impl JSONValue {
     }
 
     /// Cast the JSON Value to JSON Object
-    pub fn get_object(&self) -> JSONResult<&JSONObject> {
+    pub fn get_object(&self) -> Result<&JSONObject, JSONError> {
         match &self.data {
             JSONType::Object(json_object) => Ok(json_object),
             _ => json_err!("JSONValue::get_object() called on non-object value"),

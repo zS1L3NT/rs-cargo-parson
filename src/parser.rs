@@ -1,5 +1,5 @@
 use crate::{
-    json_err, token::Token, JSONArray, JSONBoolean, JSONNull, JSONNumber, JSONObject, JSONResult,
+    json_err, token::Token, JSONArray, JSONBoolean, JSONError, JSONNull, JSONNumber, JSONObject,
     JSONString, JSONValue,
 };
 
@@ -12,7 +12,7 @@ impl Parser {
         Parser { tokens }
     }
 
-    pub fn parse(&self) -> JSONResult<JSONValue> {
+    pub fn parse(&self) -> Result<JSONValue, JSONError> {
         let mut tokens = self.tokens.clone();
 
         if let Some(first_token) = tokens.first() {
@@ -91,7 +91,7 @@ impl Parser {
         &self,
         tokens: &mut Vec<Token>,
         stop_tokens: &Vec<Token>,
-    ) -> Option<JSONResult<JSONValue>> {
+    ) -> Option<Result<JSONValue, JSONError>> {
         if let Some(result) = self.parse_string(tokens, &stop_tokens) {
             Some(match result {
                 Ok(results) => Ok(JSONValue::from_string(results.0)),
@@ -131,7 +131,7 @@ impl Parser {
         &self,
         tokens: &mut Vec<Token>,
         stop_tokens: &Vec<Token>,
-    ) -> Option<JSONResult<(JSONString, Token)>> {
+    ) -> Option<Result<(JSONString, Token), JSONError>> {
         let tokens_cl = tokens.clone();
 
         match tokens_cl.first() {
@@ -155,7 +155,7 @@ impl Parser {
         &self,
         tokens: &mut Vec<Token>,
         stop_tokens: &Vec<Token>,
-    ) -> Option<JSONResult<(JSONNumber, Token)>> {
+    ) -> Option<Result<(JSONNumber, Token), JSONError>> {
         let tokens_cl = tokens.clone();
 
         match tokens_cl.first() {
@@ -179,7 +179,7 @@ impl Parser {
         &self,
         tokens: &mut Vec<Token>,
         stop_tokens: &Vec<Token>,
-    ) -> Option<JSONResult<(JSONBoolean, Token)>> {
+    ) -> Option<Result<(JSONBoolean, Token), JSONError>> {
         let tokens_cl = tokens.clone();
 
         match tokens_cl.first() {
@@ -203,7 +203,7 @@ impl Parser {
         &self,
         tokens: &mut Vec<Token>,
         stop_tokens: &Vec<Token>,
-    ) -> Option<JSONResult<(JSONNull, Token)>> {
+    ) -> Option<Result<(JSONNull, Token), JSONError>> {
         let tokens_cl = tokens.clone();
 
         match tokens_cl.first() {
@@ -220,7 +220,7 @@ impl Parser {
         }
     }
 
-    fn parse_array(&self, tokens: &mut Vec<Token>) -> Option<JSONResult<JSONArray>> {
+    fn parse_array(&self, tokens: &mut Vec<Token>) -> Option<Result<JSONArray, JSONError>> {
         match tokens.first() {
             Some(Token::OpenSquareBracket) => {
                 tokens.remove(0);
@@ -270,7 +270,7 @@ impl Parser {
         }
     }
 
-    fn parse_object(&self, tokens: &mut Vec<Token>) -> Option<JSONResult<JSONObject>> {
+    fn parse_object(&self, tokens: &mut Vec<Token>) -> Option<Result<JSONObject, JSONError>> {
         match tokens.first() {
             Some(Token::OpenCurlyBracket) => {
                 tokens.remove(0);

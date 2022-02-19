@@ -15,8 +15,6 @@ impl JSONError {
     }
 }
 
-pub type JSONResult<T> = Result<T, JSONError>;
-
 #[macro_export]
 macro_rules! json_err {
 	($arg:expr) => {

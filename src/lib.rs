@@ -10,7 +10,7 @@
 
 pub use json_array::JSONArray;
 pub use json_boolean::JSONBoolean;
-pub use json_error::JSONResult;
+pub use json_error::JSONError;
 pub use json_null::JSONNull;
 pub use json_number::JSONNumber;
 pub use json_object::JSONObject;

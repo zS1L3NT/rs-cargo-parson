@@ -1,4 +1,4 @@
-use crate::{json_err, token::Token, JSONResult};
+use crate::{json_err, token::Token, JSONError};
 
 pub struct Lexer {
     pub json: String,
@@ -9,7 +9,7 @@ impl Lexer {
         Lexer { json }
     }
 
-    pub fn get_tokens(&self) -> JSONResult<Vec<Token>> {
+    pub fn get_tokens(&self) -> Result<Vec<Token>, JSONError> {
         let mut tokens = vec![];
         let mut json = self.json.clone();
 
@@ -95,7 +95,7 @@ impl Lexer {
         Ok(tokens)
     }
 
-    fn lex_string(&self, string: &mut String) -> Option<JSONResult<Token>> {
+    fn lex_string(&self, string: &mut String) -> Option<Result<Token, JSONError>> {
         let mut data = String::new();
 
         if &string[..1] != "\"" {
@@ -131,7 +131,7 @@ impl Lexer {
         None
     }
 
-    fn lex_number(&self, string: &mut String) -> Option<JSONResult<Token>> {
+    fn lex_number(&self, string: &mut String) -> Option<Result<Token, JSONError>> {
         let mut data = String::new();
 
         for char in string.chars() {
@@ -190,7 +190,7 @@ impl Lexer {
         Some(Ok(Token::Number(data.parse().unwrap())))
     }
 
-    fn lex_boolean(&self, string: &mut String) -> Option<JSONResult<Token>> {
+    fn lex_boolean(&self, string: &mut String) -> Option<Result<Token, JSONError>> {
         if string.len() > 4 && string.starts_with("true") {
             *string = string[4..].to_string();
             Some(Ok(Token::Boolean(true)))
@@ -202,7 +202,7 @@ impl Lexer {
         }
     }
 
-    fn lex_null(&self, string: &mut String) -> Option<JSONResult<Token>> {
+    fn lex_null(&self, string: &mut String) -> Option<Result<Token, JSONError>> {
         if string.len() > 4 && string.starts_with("null") {
             *string = string[4..].to_string();
             Some(Ok(Token::Null))
