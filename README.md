@@ -2,7 +2,7 @@
 
 ![License](https://img.shields.io/github/license/zS1L3NT/rs-parson?style=for-the-badge) ![Languages](https://img.shields.io/github/languages/count/zS1L3NT/rs-parson?style=for-the-badge) ![Top Language](https://img.shields.io/github/languages/top/zS1L3NT/rs-parson?style=for-the-badge) ![Commit Activity](https://img.shields.io/github/commit-activity/y/zS1L3NT/rs-parson?style=for-the-badge) ![Last commit](https://img.shields.io/github/last-commit/zS1L3NT/rs-parson?style=for-the-badge)
 
-Parson is a Rust crate that parses a JSON string so that the JSON data can be used in a Rust script
+Parson is a Rust crate that parses a JSON string so that the JSON data can be used in another Rust project
 
 ## Motivation
 
@@ -22,7 +22,7 @@ As of now, the Rust crate isn't available yet.
 
 ## Credits
 
-I also learnt how to make a basic Parson from [here](https://notes.eatonphil.com/writing-a-simple-parson.html). I understood and improvised the way the author wrote the Lexer and Parsers to make the Parson more bug free
+I also learnt how to make a basic JSON Parser from [here](https://notes.eatonphil.com/writing-a-simple-parson.html). I understood and improvised the way the author wrote the Lexer and Parsers to make Parson more bug free.
 
 ## Built with
 
