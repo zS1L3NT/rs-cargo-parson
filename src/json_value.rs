@@ -36,7 +36,7 @@ impl JSONValue {
     /// # Example
     ///
     /// ```
-    /// use parse_json::{JSONString, JSONValue};
+    /// use parson::{JSONString, JSONValue};
     ///
     /// let json_string = JSONString::new(String::new());
     /// let json_value = JSONValue::from_string(json_string);
@@ -52,7 +52,7 @@ impl JSONValue {
     /// # Example
     ///
     /// ```
-    /// use parse_json::{JSONNumber, JSONValue};
+    /// use parson::{JSONNumber, JSONValue};
     ///
     /// let json_number = JSONNumber::new(1.0);
     /// let json_value = JSONValue::from_number(json_number);
@@ -68,7 +68,7 @@ impl JSONValue {
     /// # Example
     ///
     /// ```
-    /// use parse_json::{JSONValue, JSONBoolean};
+    /// use parson::{JSONValue, JSONBoolean};
     ///
     /// let json_boolean = JSONBoolean::new(true);
     /// let json_value = JSONValue::from_boolean(json_boolean);
@@ -84,7 +84,7 @@ impl JSONValue {
     /// # Example
     ///
     /// ```
-    /// use parse_json::{JSONNull, JSONValue};
+    /// use parson::{JSONNull, JSONValue};
     ///
     /// let json_null = JSONNull::new();
     /// let json_value = JSONValue::from_null(json_null);
@@ -100,7 +100,7 @@ impl JSONValue {
     /// # Example
     ///
     /// ```
-    /// use parse_json::{JSONArray, JSONValue};
+    /// use parson::{JSONArray, JSONValue};
     ///
     /// let json_array = JSONArray::new();
     /// let json_value = JSONValue::from_array(json_array);
@@ -116,7 +116,7 @@ impl JSONValue {
     /// # Example
     ///
     /// ```
-    /// use parse_json::{JSONObject, JSONValue};
+    /// use parson::{JSONObject, JSONValue};
     ///
     /// let json_object = JSONObject::new();
     /// let json_value = JSONValue::from_object(json_object);
@@ -132,7 +132,7 @@ impl JSONValue {
     /// # Example
     ///
     /// ```
-    ///	use parse_json::{JSONNull, JSONType, JSONValue};
+    ///	use parson::{JSONNull, JSONType, JSONValue};
     ///
     /// let json_value = JSONValue::from_null(JSONNull::new());
     /// assert!(match json_value.get_type() {
@@ -197,7 +197,7 @@ impl JSONValue {
     /// # Example
     ///
     /// ```
-    /// use parse_json::{JSONString, JSONValue};
+    /// use parson::{JSONString, JSONValue};
     ///
     /// let json_string = JSONString::new(String::new());
     /// let json_value = JSONValue::from_string(json_string);
@@ -215,7 +215,7 @@ impl JSONValue {
     /// # Example
     ///
     /// ```
-    /// use parse_json::{JSONNumber, JSONValue};
+    /// use parson::{JSONNumber, JSONValue};
     ///
     /// let json_number = JSONNumber::new(0.0);
     /// let json_value = JSONValue::from_number(json_number);
@@ -233,7 +233,7 @@ impl JSONValue {
     /// # Example
     ///
     /// ```
-    /// use parse_json::{JSONBoolean, JSONValue};
+    /// use parson::{JSONBoolean, JSONValue};
     ///
     /// let json_boolean = JSONBoolean::new(true);
     /// let json_value = JSONValue::from_boolean(json_boolean);
@@ -251,7 +251,7 @@ impl JSONValue {
     /// # Example
     ///
     /// ```
-    /// use parse_json::{JSONNull, JSONValue};
+    /// use parson::{JSONNull, JSONValue};
     ///
     /// let json_null = JSONNull::new();
     /// let json_value = JSONValue::from_null(json_null);
@@ -269,7 +269,7 @@ impl JSONValue {
     /// # Example
     ///
     /// ```
-    /// use parse_json::{JSONArray, JSONValue};
+    /// use parson::{JSONArray, JSONValue};
     ///
     /// let json_array = JSONArray::new();
     /// let json_value = JSONValue::from_array(json_array);
@@ -287,7 +287,7 @@ impl JSONValue {
     /// # Example
     ///
     /// ```
-    /// use parse_json::{JSONObject, JSONValue};
+    /// use parson::{JSONObject, JSONValue};
     ///
     /// let json_object = JSONObject::new();
     /// let json_value = JSONValue::from_object(json_object);

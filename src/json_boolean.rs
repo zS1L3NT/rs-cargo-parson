@@ -14,7 +14,7 @@ impl JSONBoolean {
     /// # Example
     ///
     /// ```
-    /// use parse_json::JSONBoolean;
+    /// use parson::JSONBoolean;
     ///
     /// assert_eq!(JSONBoolean::new(true).to_string(), "true");
     /// assert_eq!(JSONBoolean::new(false).to_string(), "false");

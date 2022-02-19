@@ -14,7 +14,7 @@ impl JSONString {
     /// # Example
     ///
     /// ```
-    /// use parse_json::JSONString;
+    /// use parson::JSONString;
     ///
     /// assert_eq!(JSONString::new("value".to_string()).to_string(), "\"value\"");
     /// ```

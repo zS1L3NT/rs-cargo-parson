@@ -12,7 +12,7 @@ impl JSONNull {
 	/// # Example
 	/// 
 	/// ```
-	/// use parse_json::JSONNull;
+	/// use parson::JSONNull;
 	/// 
 	/// assert_eq!(JSONNull::new().to_string(), "null");
 	/// ```

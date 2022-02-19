@@ -14,7 +14,7 @@ impl JSONNumber {
     /// # Example
     ///
     /// ```
-    /// use parse_json::JSONNumber;
+    /// use parson::JSONNumber;
     ///
     /// assert_eq!(JSONNumber::new(0.0).to_string(), "0");
     /// assert_eq!(JSONNumber::new(1.0).to_string(), "1");

@@ -16,7 +16,7 @@ impl JSONArray {
     /// # Example
     ///
     /// ```
-    /// use parse_json::{JSONArray, JSONObject, JSONValue};
+    /// use parson::{JSONArray, JSONObject, JSONValue};
     ///
     /// let mut json_array = JSONArray::new();
     /// assert_eq!(json_array.to_string(), "[  ]");

@@ -20,7 +20,7 @@ impl JSONObject {
     /// # Example
     ///
     /// ```
-    /// use parse_json::{JSONNumber, JSONObject, JSONString, JSONValue};
+    /// use parson::{JSONNumber, JSONObject, JSONString, JSONValue};
     ///
     /// let mut json_object = JSONObject::new();
     /// assert_eq!(json_object.to_string(), "{  }");
