@@ -1,4 +1,4 @@
-use crate::token::Token;
+use crate::{json_err, token::Token, JSONResult};
 
 pub struct Lexer {
     pub json: String,
@@ -9,29 +9,49 @@ impl Lexer {
         Lexer { json }
     }
 
-    pub fn get_tokens(&self) -> Vec<Token> {
+    pub fn get_tokens(&self) -> JSONResult<Vec<Token>> {
         let mut tokens = vec![];
         let mut json = self.json.clone();
 
         while json.len() > 0 {
-            if let Some(string_token) = self.lex_string(&mut json) {
-                tokens.push(string_token);
-                continue;
+            if let Some(result) = self.lex_string(&mut json) {
+                match result {
+                    Ok(string_token) => {
+                        tokens.push(string_token);
+                        continue;
+                    }
+                    Err(json_error) => return Err(json_error),
+                }
             }
 
-            if let Some(number_token) = self.lex_number(&mut json) {
-                tokens.push(number_token);
-                continue;
+            if let Some(result) = self.lex_number(&mut json) {
+                match result {
+                    Ok(number_token) => {
+                        tokens.push(number_token);
+                        continue;
+                    }
+                    Err(json_error) => return Err(json_error),
+                }
             }
 
-            if let Some(boolean_token) = self.lex_boolean(&mut json) {
-                tokens.push(boolean_token);
-                continue;
+            if let Some(result) = self.lex_boolean(&mut json) {
+                match result {
+                    Ok(boolean_token) => {
+                        tokens.push(boolean_token);
+                        continue;
+                    }
+                    Err(json_error) => return Err(json_error),
+                }
             }
 
-            if let Some(null_token) = self.lex_null(&mut json) {
-                tokens.push(null_token);
-                continue;
+            if let Some(result) = self.lex_null(&mut json) {
+                match result {
+                    Ok(null_token) => {
+                        tokens.push(null_token);
+                        continue;
+                    }
+                    Err(json_error) => return Err(json_error),
+                }
             }
 
             let first_char = json[..1].to_string();
@@ -64,18 +84,18 @@ impl Lexer {
                     json = json[1..].to_string();
                 }
                 "\"" => {
-                    panic!("Unexpected end of file: {}", json);
+                    return json_err!("Unexpected end of file: {}", json);
                 }
                 char => {
-                    panic!("Unexpected character: {}", char);
+                    return json_err!("Unexpected character: {}", char);
                 }
             }
         }
 
-        tokens
+        Ok(tokens)
     }
 
-    fn lex_string(&self, string: &mut String) -> Option<Token> {
+    fn lex_string(&self, string: &mut String) -> Option<JSONResult<Token>> {
         let mut data = String::new();
 
         if &string[..1] != "\"" {
@@ -90,10 +110,10 @@ impl Lexer {
                     data.push(char);
                     escape = false;
                 } else {
-                    panic!(
+                    return Some(json_err!(
                         "Invalid JSON: Invalid escape of character: <{}>",
                         char.encode_utf8(&mut [0, 0])
-                    );
+                    ));
                 }
             } else {
                 if char == '\\' {
@@ -101,7 +121,7 @@ impl Lexer {
                     escape = true;
                 } else if char == '"' {
                     *string = string[data.len() + 2..].to_string();
-                    return Some(Token::String(data));
+                    return Some(Ok(Token::String(data)));
                 } else {
                     data.push(char);
                 }
@@ -111,7 +131,7 @@ impl Lexer {
         None
     }
 
-    fn lex_number(&self, string: &mut String) -> Option<Token> {
+    fn lex_number(&self, string: &mut String) -> Option<JSONResult<Token>> {
         let mut data = String::new();
 
         for char in string.chars() {
@@ -126,7 +146,9 @@ impl Lexer {
                     data.push(char);
                     continue;
                 }
-                panic!("Invalid JSON: Invalid position for character \"-\" in number");
+                return Some(json_err!(
+                    "Invalid JSON: Invalid position for character \"-\" in number"
+                ));
             }
 
             if char == 'e' || char == 'E' {
@@ -138,7 +160,9 @@ impl Lexer {
                     data.push(char);
                     continue;
                 }
-                panic!("Invalid JSON: Invalid position for character \"e\" in number")
+                return Some(json_err!(
+                    "Invalid JSON: Invalid position for character \"e\" in number"
+                ));
             }
 
             if char == '.' {
@@ -150,7 +174,9 @@ impl Lexer {
                     data.push(char);
                     continue;
                 }
-                panic!("Invalid JSON: Invalid position for character \".\" in number");
+                return Some(json_err!(
+                    "Invalid JSON: Invalid position for character \".\" in number"
+                ));
             }
 
             break;
@@ -161,25 +187,25 @@ impl Lexer {
         }
 
         *string = string[data.len()..].to_string();
-        Some(Token::Number(data.parse().unwrap()))
+        Some(Ok(Token::Number(data.parse().unwrap())))
     }
 
-    fn lex_boolean(&self, string: &mut String) -> Option<Token> {
+    fn lex_boolean(&self, string: &mut String) -> Option<JSONResult<Token>> {
         if string.len() > 4 && string.starts_with("true") {
             *string = string[4..].to_string();
-            Some(Token::Boolean(true))
+            Some(Ok(Token::Boolean(true)))
         } else if string.len() > 5 && string.starts_with("false") {
             *string = string[5..].to_string();
-            Some(Token::Boolean(false))
+            Some(Ok(Token::Boolean(false)))
         } else {
             None
         }
     }
 
-    fn lex_null(&self, string: &mut String) -> Option<Token> {
+    fn lex_null(&self, string: &mut String) -> Option<JSONResult<Token>> {
         if string.len() > 4 && string.starts_with("null") {
             *string = string[4..].to_string();
-            Some(Token::Null)
+            Some(Ok(Token::Null))
         } else {
             None
         }

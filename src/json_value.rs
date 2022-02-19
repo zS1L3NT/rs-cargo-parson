@@ -1,8 +1,8 @@
 use std::{fmt::Debug, str::FromStr};
 
 use crate::{
-    lexer::Lexer, parser::Parser, JSONArray, JSONBoolean, JSONNull, JSONNumber, JSONObject,
-    JSONString,
+    json_err, json_error::JSONError, lexer::Lexer, parser::Parser, JSONArray, JSONBoolean,
+    JSONNull, JSONNumber, JSONObject, JSONResult, JSONString,
 };
 
 #[derive(Debug, Clone)]
@@ -21,12 +21,22 @@ pub struct JSONValue {
 }
 
 impl FromStr for JSONValue {
-    type Err = String;
+    type Err = JSONError;
 
     fn from_str(json: &str) -> Result<Self, Self::Err> {
         let lexer = Lexer::new(json.to_string());
-        let parser = Parser::new(lexer.get_tokens());
-        Ok(parser.parse())
+        let tokens = lexer.get_tokens();
+        if let Ok(tokens) = tokens {
+            let parser = Parser::new(tokens);
+            let json_value = parser.parse();
+            if let Ok(json_value) = json_value {
+                Ok(json_value)
+            } else {
+                json_err!(json_value.unwrap_err().get_message())
+            }
+        } else {
+            json_err!(tokens.unwrap_err().get_message())
+        }
     }
 }
 
@@ -145,50 +155,50 @@ impl JSONValue {
     }
 
     /// Cast the JSON Value to a Rust owned string
-    pub fn get_string(&self) -> String {
+    pub fn get_string(&self) -> JSONResult<String> {
         match &self.data {
-            JSONType::String(json_string) => json_string.get_string(),
-            _ => panic!("JSONValue::get_string() called on non-string value"),
+            JSONType::String(json_string) => Ok(json_string.get_string()),
+            _ => json_err!("JSONValue::get_string() called on non-string value"),
         }
     }
 
     /// Cast the JSON Value to a Rust f64
-    pub fn get_number(&self) -> f64 {
+    pub fn get_number(&self) -> JSONResult<f64> {
         match &self.data {
-            JSONType::Number(json_number) => json_number.get_number(),
-            _ => panic!("JSONValue::get_number() called on non-number value"),
+            JSONType::Number(json_number) => Ok(json_number.get_number()),
+            _ => json_err!("JSONValue::get_number() called on non-number value"),
         }
     }
 
     /// Cast the JSON Value to a Rust bool
-    pub fn get_boolean(&self) -> bool {
+    pub fn get_boolean(&self) -> JSONResult<bool> {
         match &self.data {
-            JSONType::Boolean(json_boolean) => json_boolean.get_boolean(),
-            _ => panic!("JSONValue::get_boolean() called on non-boolean value"),
+            JSONType::Boolean(json_boolean) => Ok(json_boolean.get_boolean()),
+            _ => json_err!("JSONValue::get_boolean() called on non-boolean value"),
         }
     }
 
     /// Cast the JSON Value to JSON Null
-    pub fn get_null(&self) -> &JSONNull {
+    pub fn get_null(&self) -> JSONResult<&JSONNull> {
         match &self.data {
-            JSONType::Null(json_null) => json_null,
-            _ => panic!("JSONValue::get_null() called on non-null value"),
+            JSONType::Null(json_null) => Ok(json_null),
+            _ => json_err!("JSONValue::get_null() called on non-null value"),
         }
     }
 
     /// Cast the JSON Value to JSON Array
-    pub fn get_array(&self) -> &JSONArray {
+    pub fn get_array(&self) -> JSONResult<&JSONArray> {
         match &self.data {
-            JSONType::Array(json_array) => json_array,
-            _ => panic!("JSONValue::get_array() called on non-array value"),
+            JSONType::Array(json_array) => Ok(json_array),
+            _ => json_err!("JSONValue::get_array() called on non-array value"),
         }
     }
 
     /// Cast the JSON Value to JSON Object
-    pub fn get_object(&self) -> &JSONObject {
+    pub fn get_object(&self) -> JSONResult<&JSONObject> {
         match &self.data {
-            JSONType::Object(json_object) => json_object,
-            _ => panic!("JSONValue::get_object() called on non-object value"),
+            JSONType::Object(json_object) => Ok(json_object),
+            _ => json_err!("JSONValue::get_object() called on non-object value"),
         }
     }
 

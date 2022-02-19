@@ -10,6 +10,7 @@
 
 pub use json_array::JSONArray;
 pub use json_boolean::JSONBoolean;
+pub use json_error::JSONResult;
 pub use json_null::JSONNull;
 pub use json_number::JSONNumber;
 pub use json_object::JSONObject;
@@ -19,6 +20,7 @@ pub use json_value::JSONValue;
 
 mod json_array;
 mod json_boolean;
+mod json_error;
 mod json_null;
 mod json_number;
 mod json_object;
