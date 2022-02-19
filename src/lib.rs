@@ -16,7 +16,6 @@ pub use json_object::JSONObject;
 pub use json_string::JSONString;
 pub use json_value::JSONType;
 pub use json_value::JSONValue;
-use token::Token;
 
 mod json_array;
 mod json_boolean;

@@ -1,5 +1,5 @@
 use crate::{
-    JSONArray, JSONBoolean, JSONNull, JSONNumber, JSONObject, JSONString, JSONValue, Token,
+    token::Token, JSONArray, JSONBoolean, JSONNull, JSONNumber, JSONObject, JSONString, JSONValue,
 };
 
 pub struct Parser {

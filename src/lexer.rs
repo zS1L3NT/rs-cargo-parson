@@ -1,4 +1,4 @@
-use crate::Token;
+use crate::token::Token;
 
 pub struct Lexer {
     pub json: String,
