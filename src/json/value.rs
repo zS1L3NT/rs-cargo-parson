@@ -81,21 +81,21 @@ impl JSONValue {
 
     pub fn get_null(&self) -> &JSONNull {
         match &self.data {
-            JSONType::Null(json_null) => &json_null,
+            JSONType::Null(json_null) => json_null,
             _ => panic!("JSONValue::get_null() called on non-null value"),
         }
     }
 
     pub fn get_array(&self) -> &JSONArray {
         match &self.data {
-            JSONType::Array(json_array) => &json_array,
+            JSONType::Array(json_array) => json_array,
             _ => panic!("JSONValue::get_array() called on non-array value"),
         }
     }
 
     pub fn get_object(&self) -> &JSONObject {
         match &self.data {
-            JSONType::Object(json_object) => &json_object,
+            JSONType::Object(json_object) => json_object,
             _ => panic!("JSONValue::get_object() called on non-object value"),
         }
     }
