@@ -4,14 +4,26 @@ pub struct JSONBoolean {
 }
 
 impl JSONBoolean {
+    /// Create a new empty JSON Boolean
     pub fn new(data: bool) -> Self {
         JSONBoolean { data }
     }
 
+    /// Convert JSON Boolean to a Rust owned string
+    ///
+    /// # Example
+    ///
+    /// ```
+    /// use parse_json::JSONBoolean;
+    ///
+    /// assert_eq!(JSONBoolean::new(true).to_string(), "true");
+    /// assert_eq!(JSONBoolean::new(false).to_string(), "false");
+    /// ```
     pub fn to_string(&self) -> String {
         self.data.to_string()
     }
 
+    /// Get a Rust bool from the JSON Boolean
     pub fn get_boolean(&self) -> bool {
         self.data
     }

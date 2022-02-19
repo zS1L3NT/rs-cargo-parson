@@ -23,3 +23,4 @@ I also learnt how to make a basic JSON parser from [here](https://notes.eatonphi
 ## Built with
 
 -   Rust
+    -   [![indexmap](https://img.shields.io/badge/indexmap-%5E1.8.0-blue?style=flat-square)](https://docs.rs/indexmap/1.8.0)

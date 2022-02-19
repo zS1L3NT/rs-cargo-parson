@@ -6,10 +6,25 @@ pub struct JSONArray {
 }
 
 impl JSONArray {
+    /// Create a new empty JSON Array
     pub fn new() -> Self {
         JSONArray { data: vec![] }
     }
 
+    /// Convert JSON Array to a Rust owned string
+    ///
+    /// # Example
+    ///
+    /// ```
+    /// use parse_json::{JSONArray, JSONObject, JSONValue};
+    ///
+    /// let mut json_array = JSONArray::new();
+    /// assert_eq!(json_array.to_string(), "[  ]");
+    /// json_array.push(JSONValue::from_object(JSONObject::new()));
+    /// assert_eq!(json_array.to_string(), "[ {  } ]");
+    /// json_array.push(JSONValue::from_array(JSONArray::new()));
+    /// assert_eq!(json_array.to_string(), "[ {  }, [  ] ]");
+    /// ```
     pub fn to_string(&self) -> String {
         let mut result = "[ ".to_string();
 
@@ -26,10 +41,12 @@ impl JSONArray {
         result
     }
 
+    /// Add push JSON Value to back of the JSON Array
     pub fn push(&mut self, value: JSONValue) {
         self.data.push(value);
     }
 
+    /// Get a value at a specific index in the JSON Array
     pub fn get(&self, index: usize) -> Option<&JSONValue> {
         self.data.get(index)
     }
