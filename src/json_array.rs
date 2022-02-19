@@ -41,6 +41,16 @@ impl JSONArray {
         result
     }
 
+    /// Convert JSON Array to a Rust Vector
+	pub fn to_vec(&self) -> Vec<JSONValue> {
+		self.data.clone()
+	}
+
+    /// Get the number of elements in the JSON Array
+    pub fn len(&self) -> usize {
+        self.data.len()
+    }
+
     /// Add push JSON Value to back of the JSON Array
     pub fn push(&mut self, value: JSONValue) {
         self.data.push(value);

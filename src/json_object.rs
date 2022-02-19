@@ -1,3 +1,5 @@
+use std::collections::HashMap;
+
 use indexmap::{indexmap, IndexMap};
 
 use crate::JSONValue;
@@ -41,6 +43,19 @@ impl JSONObject {
 
         result.push_str(" }");
         result
+    }
+
+    /// Convert JSON Object to a Rust HashMap
+    pub fn to_hashmap(&self) -> HashMap<String, JSONValue> {
+        self.data
+            .keys()
+            .map(|k| (k.clone(), self.data[k].clone()))
+            .collect()
+    }
+
+    /// Get the number of key-value pairs in the JSON Object
+    pub fn len(&self) -> usize {
+        self.data.len()
     }
 
     /// Get a value by a specific key in the JSON Object
