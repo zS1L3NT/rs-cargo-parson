@@ -7,15 +7,15 @@ impl JSONNull {
         JSONNull {}
     }
 
-	/// Convert JSON Null to a Rust owned string
-	/// 
-	/// # Example
-	/// 
-	/// ```
-	/// use parson::JSONNull;
-	/// 
-	/// assert_eq!(JSONNull::new().to_string(), "null");
-	/// ```
+    /// Convert JSON Null to a Rust owned string
+    ///
+    /// # Example
+    ///
+    /// ```
+    /// use parson::JSONNull;
+    ///
+    /// assert_eq!(JSONNull::new().to_string(), "null");
+    /// ```
     pub fn to_string(&self) -> String {
         "null".to_string()
     }
