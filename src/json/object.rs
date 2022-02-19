@@ -1,6 +1,6 @@
 use std::collections::HashMap;
 
-use super::value::JSONValue;
+use crate::JSONValue;
 
 #[derive(Debug, Clone)]
 pub struct JSONObject {

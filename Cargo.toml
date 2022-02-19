@@ -1,5 +1,5 @@
 [package]
-name = "rs-json-parser"
+name = "parse-json"
 version = "0.1.0"
 edition = "2021"
 

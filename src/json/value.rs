@@ -1,9 +1,6 @@
 use std::fmt::Debug;
 
-use super::{
-    array::JSONArray, boolean::JSONBoolean, null::JSONNull, number::JSONNumber, object::JSONObject,
-    string::JSONString,
-};
+use crate::{JSONArray, JSONBoolean, JSONNull, JSONNumber, JSONObject, JSONString};
 
 #[derive(Debug, Clone)]
 pub enum JSONType {

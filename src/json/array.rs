@@ -1,4 +1,4 @@
-use super::value::JSONValue;
+use crate::JSONValue;
 
 #[derive(Debug, Clone)]
 pub struct JSONArray {
