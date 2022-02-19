@@ -16,8 +16,6 @@ pub use json_object::JSONObject;
 pub use json_string::JSONString;
 pub use json_value::JSONType;
 pub use json_value::JSONValue;
-use lexer::Lexer;
-use parser::Parser;
 use token::Token;
 
 mod json_array;
@@ -30,10 +28,3 @@ mod json_value;
 mod lexer;
 mod parser;
 mod token;
-
-/// Parse JSON in the form of a `&str` into a JSON Value
-pub fn parse(json: &str) -> JSONValue {
-    let lexer = Lexer::new(json.to_string());
-    let parser = Parser::new(lexer.get_tokens());
-    parser.parse()
-}

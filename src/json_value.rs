@@ -1,6 +1,9 @@
-use std::fmt::Debug;
+use std::{fmt::Debug, str::FromStr};
 
-use crate::{JSONArray, JSONBoolean, JSONNull, JSONNumber, JSONObject, JSONString};
+use crate::{
+    lexer::Lexer, parser::Parser, JSONArray, JSONBoolean, JSONNull, JSONNumber, JSONObject,
+    JSONString,
+};
 
 #[derive(Debug, Clone)]
 pub enum JSONType {
@@ -15,6 +18,16 @@ pub enum JSONType {
 #[derive(Debug, Clone)]
 pub struct JSONValue {
     data: JSONType,
+}
+
+impl FromStr for JSONValue {
+    type Err = String;
+
+    fn from_str(json: &str) -> Result<Self, Self::Err> {
+        let lexer = Lexer::new(json.to_string());
+        let parser = Parser::new(lexer.get_tokens());
+        Ok(parser.parse())
+    }
 }
 
 impl JSONValue {
