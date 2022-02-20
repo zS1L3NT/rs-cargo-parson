@@ -1,6 +1,7 @@
 use crate::{
-    json_err, token::Token, JSONArray, JSONBoolean, JSONError, JSONNull, JSONNumber, JSONObject,
-    JSONString, JSONValue,
+    json_err,
+    token::{Location, Token},
+    JSONArray, JSONBoolean, JSONError, JSONNull, JSONNumber, JSONObject, JSONString, JSONValue,
 };
 
 pub struct Parser {
@@ -17,7 +18,7 @@ impl Parser {
 
         if let Some(first_token) = tokens.first() {
             match first_token {
-                Token::OpenSquareBracket => {
+                Token::OpenSquareBracket(location) => {
                     let json_array = self.parse_array(&mut tokens);
                     if let Some(json_array) = json_array {
                         if let Ok(json_array) = json_array {
@@ -29,7 +30,7 @@ impl Parser {
                         json_err!("Invalid JSON: First token of array not [")
                     }
                 }
-                Token::OpenCurlyBracket => {
+                Token::OpenCurlyBracket(location) => {
                     let json_object = self.parse_object(&mut tokens);
                     if let Some(json_object) = json_object {
                         if let Ok(json_object) = json_object {
@@ -41,44 +42,44 @@ impl Parser {
                         json_err!("Invalid JSON: First token of object not {{")
                     }
                 }
-                Token::String(string) => {
+                Token::String(string, location) => {
                     if tokens.len() == 1 {
                         Ok(JSONValue::from_string(JSONString::new(string.clone())))
                     } else {
                         json_err!("Invalid JSON: Expected end of file after \"{}\"", string)
                     }
                 }
-                Token::Number(number) => {
+                Token::Number(number, location) => {
                     if tokens.len() == 1 {
                         Ok(JSONValue::from_number(JSONNumber::new(*number)))
                     } else {
                         json_err!("Invalid JSON: Expected end of file after {}", number)
                     }
                 }
-                Token::Boolean(boolean) => {
+                Token::Boolean(boolean, location) => {
                     if tokens.len() == 1 {
                         Ok(JSONValue::from_boolean(JSONBoolean::new(*boolean)))
                     } else {
                         json_err!("Invalid JSON: Expected end of file after {}", boolean)
                     }
                 }
-                Token::Null => {
+                Token::Null(location) => {
                     if tokens.len() == 1 {
                         Ok(JSONValue::from_null(JSONNull::new()))
                     } else {
                         json_err!("Invalid JSON: Expected end of file after null")
                     }
                 }
-                Token::CloseCurlyBracket => {
+                Token::CloseCurlyBracket(location) => {
                     json_err!("Invalid JSON: Unexpected start of file: {{")
                 }
-                Token::CloseSquareBracket => {
+                Token::CloseSquareBracket(location) => {
                     json_err!("Invalid JSON: Unexpected start of file: }}")
                 }
-                Token::Colon => {
+                Token::Colon(location) => {
                     json_err!("Invalid JSON: Unexpected start of file: :")
                 }
-                Token::Comma => {
+                Token::Comma(location) => {
                     json_err!("Invalid JSON: Unexpected start of file: ,")
                 }
             }
@@ -139,7 +140,7 @@ impl Parser {
         stop_tokens: &Vec<Token>,
     ) -> Option<Result<(JSONString, Token), JSONError>> {
         let tokens_cl = tokens.clone();
-        if let Some(Token::String(string)) = tokens_cl.first() {
+        if let Some(Token::String(string, location)) = tokens_cl.first() {
             if let Some(second_token) = tokens_cl.get(1) {
                 if stop_tokens.contains(second_token) {
                     tokens.remove(0);
@@ -162,7 +163,7 @@ impl Parser {
     ) -> Option<Result<(JSONNumber, Token), JSONError>> {
         let tokens_cl = tokens.clone();
 
-        if let Some(Token::Number(number)) = tokens_cl.first() {
+        if let Some(Token::Number(number, location)) = tokens_cl.first() {
             if let Some(second_token) = tokens_cl.get(1) {
                 if stop_tokens.contains(second_token) {
                     tokens.remove(0);
@@ -185,7 +186,7 @@ impl Parser {
     ) -> Option<Result<(JSONBoolean, Token), JSONError>> {
         let tokens_cl = tokens.clone();
 
-        if let Some(Token::Boolean(boolean)) = tokens_cl.first() {
+        if let Some(Token::Boolean(boolean, location)) = tokens_cl.first() {
             if let Some(second_token) = tokens_cl.get(1) {
                 if stop_tokens.contains(second_token) {
                     tokens.remove(0);
@@ -208,7 +209,7 @@ impl Parser {
     ) -> Option<Result<(JSONNull, Token), JSONError>> {
         let tokens_cl = tokens.clone();
 
-        if let Some(Token::Null) = tokens_cl.first() {
+        if let Some(Token::Null(location)) = tokens_cl.first() {
             if let Some(second_token) = tokens_cl.get(1) {
                 if stop_tokens.contains(second_token) {
                     tokens.remove(0);
@@ -221,18 +222,23 @@ impl Parser {
     }
 
     fn parse_array(&self, tokens: &mut Vec<Token>) -> Option<Result<JSONArray, JSONError>> {
-        if let Some(Token::OpenSquareBracket) = tokens.first() {
+        if let Some(Token::OpenSquareBracket(location)) = tokens.first() {
             tokens.remove(0);
             let mut array = JSONArray::new();
 
-            if let Some(Token::CloseSquareBracket) = tokens.first() {
+            if let Some(Token::CloseSquareBracket(location)) = tokens.first() {
                 tokens.remove(0);
                 return Some(Ok(array));
             }
 
             while tokens.len() > 0 {
-                let json_value =
-                    self.parse_value(tokens, &vec![Token::CloseSquareBracket, Token::Comma]);
+                let json_value = self.parse_value(
+                    tokens,
+                    &vec![
+                        Token::CloseSquareBracket(Location::new()),
+                        Token::Comma(Location::new()),
+                    ],
+                );
                 if let Some(json_value) = json_value {
                     if let Ok(json_value) = json_value {
                         array.push(json_value);
@@ -244,11 +250,11 @@ impl Parser {
                 }
 
                 match tokens.first() {
-                    Some(Token::CloseSquareBracket) => {
+                    Some(Token::CloseSquareBracket(location)) => {
                         tokens.remove(0);
                         return Some(Ok(array));
                     }
-                    Some(Token::Comma) => {
+                    Some(Token::Comma(location)) => {
                         tokens.remove(0);
                     }
                     Some(char) => {
@@ -267,11 +273,11 @@ impl Parser {
     }
 
     fn parse_object(&self, tokens: &mut Vec<Token>) -> Option<Result<JSONObject, JSONError>> {
-        if let Some(Token::OpenCurlyBracket) = tokens.first() {
+        if let Some(Token::OpenCurlyBracket(location)) = tokens.first() {
             tokens.remove(0);
             let mut object = JSONObject::new();
 
-            if let Some(Token::CloseCurlyBracket) = tokens.first() {
+            if let Some(Token::CloseCurlyBracket(location)) = tokens.first() {
                 tokens.remove(0);
                 return Some(Ok(object));
             }
@@ -280,7 +286,7 @@ impl Parser {
                 let tokens_cl = tokens.clone();
                 let key = tokens_cl.first().unwrap();
                 let key = match key {
-                    Token::String(string) => {
+                    Token::String(string, location) => {
                         tokens.remove(0);
                         string.clone()
                     }
@@ -294,7 +300,7 @@ impl Parser {
                 };
 
                 match tokens.first() {
-                    Some(Token::Colon) => {
+                    Some(Token::Colon(location)) => {
                         tokens.remove(0);
                     }
                     Some(token) => {
@@ -309,8 +315,13 @@ impl Parser {
                     }
                 }
 
-                let json_value =
-                    self.parse_value(tokens, &vec![Token::CloseCurlyBracket, Token::Comma]);
+                let json_value = self.parse_value(
+                    tokens,
+                    &vec![
+                        Token::CloseCurlyBracket(Location::new()),
+                        Token::Comma(Location::new()),
+                    ],
+                );
                 if let Some(json_value) = json_value {
                     if let Ok(json_value) = json_value {
                         object.set(key, json_value);
@@ -322,11 +333,11 @@ impl Parser {
                 }
 
                 match tokens.first() {
-                    Some(Token::CloseCurlyBracket) => {
+                    Some(Token::CloseCurlyBracket(location)) => {
                         tokens.remove(0);
                         return Some(Ok(object));
                     }
-                    Some(Token::Comma) => {
+                    Some(Token::Comma(location)) => {
                         tokens.remove(0);
                     }
                     Some(char) => {

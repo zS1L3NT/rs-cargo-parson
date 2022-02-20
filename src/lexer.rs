@@ -1,4 +1,8 @@
-use crate::{json_err, token::Token, JSONError};
+use crate::{
+    json_err,
+    token::{Location, Token},
+    JSONError,
+};
 
 pub struct Lexer {
     pub json: String,
@@ -12,38 +16,47 @@ impl Lexer {
     pub fn get_tokens(&self) -> Result<Vec<Token>, JSONError> {
         let mut tokens = vec![];
         let mut json = self.json.clone();
+        let mut location = Location::new();
 
         while json.len() > 0 {
-            if let Some(result) = self.lex_string(&mut json) {
-                if let Ok(string_token) = result {
+            if let Some(result) = self.lex_string(&mut json, location.clone()) {
+                if let Ok(result) = result {
+                    let (string_token, length) = result;
                     tokens.push(string_token);
+                    location.column += length;
                     continue;
                 } else {
                     json_err!(result.unwrap_err().get_message());
                 }
             }
 
-            if let Some(result) = self.lex_number(&mut json) {
-                if let Ok(number_token) = result {
+            if let Some(result) = self.lex_number(&mut json, location.clone()) {
+                if let Ok(result) = result {
+                    let (number_token, length) = result;
                     tokens.push(number_token);
+                    location.column += length;
                     continue;
                 } else {
                     json_err!(result.unwrap_err().get_message());
                 }
             }
 
-            if let Some(result) = self.lex_boolean(&mut json) {
-                if let Ok(boolean_token) = result {
+            if let Some(result) = self.lex_boolean(&mut json, location.clone()) {
+                if let Ok(result) = result {
+                    let (boolean_token, length) = result;
                     tokens.push(boolean_token);
+                    location.column += length;
                     continue;
                 } else {
                     json_err!(result.unwrap_err().get_message());
                 }
             }
 
-            if let Some(result) = self.lex_null(&mut json) {
-                if let Ok(null_token) = result {
+            if let Some(result) = self.lex_null(&mut json, location.clone()) {
+                if let Ok(result) = result {
+                    let (null_token, length) = result;
                     tokens.push(null_token);
+                    location.column += length;
                     continue;
                 } else {
                     json_err!(result.unwrap_err().get_message());
@@ -52,32 +65,47 @@ impl Lexer {
 
             let first_char = json[..1].to_string();
             match &first_char[..] {
-                " " | "\t" | "\r" | "\n" => {
+                " " | "\t" => {
                     json = json[1..].to_string();
+                    location.column += 1;
+                }
+                "\r" => {
+                    json = json[1..].to_string();
+                }
+                "\n" => {
+                    json = json[1..].to_string();
+                    location.line += 1;
+					location.column = 1;
                 }
                 "{" => {
-                    tokens.push(Token::OpenCurlyBracket);
                     json = json[1..].to_string();
+                    tokens.push(Token::OpenCurlyBracket(location.clone()));
+                    location.column += 1;
                 }
                 "}" => {
-                    tokens.push(Token::CloseCurlyBracket);
                     json = json[1..].to_string();
+                    tokens.push(Token::CloseCurlyBracket(location.clone()));
+                    location.column += 1;
                 }
                 "[" => {
-                    tokens.push(Token::OpenSquareBracket);
                     json = json[1..].to_string();
+                    tokens.push(Token::OpenSquareBracket(location.clone()));
+                    location.column += 1;
                 }
                 "]" => {
-                    tokens.push(Token::CloseSquareBracket);
                     json = json[1..].to_string();
+                    tokens.push(Token::CloseSquareBracket(location.clone()));
+                    location.column += 1;
                 }
                 "," => {
-                    tokens.push(Token::Comma);
                     json = json[1..].to_string();
+                    tokens.push(Token::Comma(location.clone()));
+                    location.column += 1;
                 }
                 ":" => {
-                    tokens.push(Token::Colon);
                     json = json[1..].to_string();
+                    tokens.push(Token::Colon(location.clone()));
+                    location.column += 1;
                 }
                 "\"" => {
                     json_err!("Unexpected end of file: {}", json);
@@ -91,7 +119,11 @@ impl Lexer {
         Ok(tokens)
     }
 
-    fn lex_string(&self, string: &mut String) -> Option<Result<Token, JSONError>> {
+    fn lex_string(
+        &self,
+        string: &mut String,
+        location: Location,
+    ) -> Option<Result<(Token, usize), JSONError>> {
         let mut data = String::new();
 
         if &string[..1] != "\"" {
@@ -117,8 +149,9 @@ impl Lexer {
                     data.push(char);
                     escape = true;
                 } else if char == '"' {
-                    *string = string[data.len() + 2..].to_string();
-                    return Some(Ok(Token::String(data)));
+                    let length = data.len();
+                    *string = string[length + 2..].to_string();
+                    return Some(Ok((Token::String(data, location), length + 2)));
                 } else {
                     data.push(char);
                 }
@@ -128,7 +161,11 @@ impl Lexer {
         json_err!(Some, "Invalid JSON: Unexpected end of string")
     }
 
-    fn lex_number(&self, string: &mut String) -> Option<Result<Token, JSONError>> {
+    fn lex_number(
+        &self,
+        string: &mut String,
+        location: Location,
+    ) -> Option<Result<(Token, usize), JSONError>> {
         let mut data = String::new();
 
         for char in string.chars() {
@@ -187,25 +224,36 @@ impl Lexer {
         }
 
         *string = string[data.len()..].to_string();
-        Some(Ok(Token::Number(data.parse().unwrap())))
+        Some(Ok((
+            Token::Number(data.parse().unwrap(), location),
+            data.len(),
+        )))
     }
 
-    fn lex_boolean(&self, string: &mut String) -> Option<Result<Token, JSONError>> {
+    fn lex_boolean(
+        &self,
+        string: &mut String,
+        location: Location,
+    ) -> Option<Result<(Token, usize), JSONError>> {
         if string.len() > 4 && string.starts_with("true") {
             *string = string[4..].to_string();
-            Some(Ok(Token::Boolean(true)))
+            Some(Ok((Token::Boolean(true, location), 4)))
         } else if string.len() > 5 && string.starts_with("false") {
             *string = string[5..].to_string();
-            Some(Ok(Token::Boolean(false)))
+            Some(Ok((Token::Boolean(false, location), 5)))
         } else {
             None
         }
     }
 
-    fn lex_null(&self, string: &mut String) -> Option<Result<Token, JSONError>> {
+    fn lex_null(
+        &self,
+        string: &mut String,
+        location: Location,
+    ) -> Option<Result<(Token, usize), JSONError>> {
         if string.len() > 4 && string.starts_with("null") {
             *string = string[4..].to_string();
-            Some(Ok(Token::Null))
+            Some(Ok((Token::Null(location), 4)))
         } else {
             None
         }
