@@ -70,20 +70,20 @@ impl Parser {
                     }
                 }
                 Token::CloseCurlyBracket => {
-                    panic!("Invalid JSON: Unexpected start of file: {{")
+                    json_err!("Invalid JSON: Unexpected start of file: {{")
                 }
                 Token::CloseSquareBracket => {
-                    panic!("Invalid JSON: Unexpected start of file: }}")
+                    json_err!("Invalid JSON: Unexpected start of file: }}")
                 }
                 Token::Colon => {
-                    panic!("Invalid JSON: Unexpected start of file: :")
+                    json_err!("Invalid JSON: Unexpected start of file: :")
                 }
                 Token::Comma => {
-                    panic!("Invalid JSON: Unexpected start of file: ,")
+                    json_err!("Invalid JSON: Unexpected start of file: ,")
                 }
             }
         } else {
-            panic!("Invalid JSON: No tokens found");
+            json_err!("Invalid JSON: No tokens found")
         }
     }
 
@@ -96,37 +96,37 @@ impl Parser {
             if let Ok(results) = result {
                 Some(Ok(JSONValue::from_string(results.0)))
             } else {
-                Some(json_err!(result.unwrap_err().get_message()))
+                json_err!(Some, result.unwrap_err().get_message())
             }
         } else if let Some(result) = self.parse_number(tokens, &stop_tokens) {
             if let Ok(results) = result {
                 Some(Ok(JSONValue::from_number(results.0)))
             } else {
-                Some(json_err!(result.unwrap_err().get_message()))
+                json_err!(Some, result.unwrap_err().get_message())
             }
         } else if let Some(result) = self.parse_boolean(tokens, &stop_tokens) {
             if let Ok(results) = result {
                 Some(Ok(JSONValue::from_boolean(results.0)))
             } else {
-                Some(json_err!(result.unwrap_err().get_message()))
+                json_err!(Some, result.unwrap_err().get_message())
             }
         } else if let Some(result) = self.parse_null(tokens, &stop_tokens) {
             if let Ok(results) = result {
                 Some(Ok(JSONValue::from_null(results.0)))
             } else {
-                Some(json_err!(result.unwrap_err().get_message()))
+                json_err!(Some, result.unwrap_err().get_message())
             }
         } else if let Some(result) = self.parse_array(tokens) {
             if let Ok(results) = result {
                 Some(Ok(JSONValue::from_array(results)))
             } else {
-                Some(json_err!(result.unwrap_err().get_message()))
+                json_err!(Some, result.unwrap_err().get_message())
             }
         } else if let Some(result) = self.parse_object(tokens) {
             if let Ok(results) = result {
                 Some(Ok(JSONValue::from_object(results)))
             } else {
-                Some(json_err!(result.unwrap_err().get_message()))
+                json_err!(Some, result.unwrap_err().get_message())
             }
         } else {
             None
@@ -146,10 +146,11 @@ impl Parser {
                     return Some(Ok((JSONString::new(string.clone()), second_token.clone())));
                 }
             }
-            return Some(json_err!(
+            json_err!(
+                Some,
                 "Invalid JSON: Unexpected end of file after string: {}",
-                string,
-            ));
+                string
+            );
         }
         None
     }
@@ -168,10 +169,11 @@ impl Parser {
                     return Some(Ok((JSONNumber::new(*number), second_token.clone())));
                 }
             }
-            return Some(json_err!(
+            json_err!(
+                Some,
                 "Invalid JSON: Unexpected end of file after number: {}",
                 number,
-            ));
+            );
         }
         None
     }
@@ -190,10 +192,11 @@ impl Parser {
                     return Some(Ok((JSONBoolean::new(*boolean), second_token.clone())));
                 }
             }
-            return Some(json_err!(
+            json_err!(
+                Some,
                 "Invalid JSON: Unexpected end of file after boolean: {}",
                 boolean,
-            ));
+            );
         }
         None
     }
@@ -212,7 +215,7 @@ impl Parser {
                     return Some(Ok((JSONNull::new(), second_token.clone())));
                 }
             }
-            return Some(json_err!("Invalid JSON: Unexpected end of file after null"));
+            json_err!(Some, "Invalid JSON: Unexpected end of file after null");
         }
         None
     }
@@ -234,10 +237,10 @@ impl Parser {
                     if let Ok(json_value) = json_value {
                         array.push(json_value);
                     } else {
-                        return Some(json_err!(&json_value.unwrap_err().get_message()));
+                        json_err!(Some, &json_value.unwrap_err().get_message());
                     }
                 } else {
-                    return Some(json_err!("Invalid JSON: Unexpected end of file in array"));
+                    json_err!(Some, "Invalid JSON: Unexpected end of file in array");
                 }
 
                 match tokens.first() {
@@ -249,15 +252,16 @@ impl Parser {
                         tokens.remove(0);
                     }
                     Some(char) => {
-                        panic!("Invalid JSON: Unexpected character: {}", char)
+                        json_err!(Some, "Invalid JSON: Unexpected character: {}", char)
                     }
-                    _ => {
-                        panic!("Invalid JSON: Unexpected end of file")
-                    }
+                    _ => json_err!(Some, "Invalid JSON: Unexpected end of file"),
                 }
             }
 
-            panic!("Invalid JSON: Unexpected end of file before finding open square bracket");
+            json_err!(
+                Some,
+                "Invalid JSON: Unexpected end of file before finding open square bracket"
+            );
         }
         None
     }
@@ -281,7 +285,11 @@ impl Parser {
                         string.clone()
                     }
                     _ => {
-                        panic!("Invalid JSON: Expected string key in object, got {}", key);
+                        json_err!(
+                            Some,
+                            "Invalid JSON: Expected string key in object, got {}",
+                            key
+                        );
                     }
                 };
 
@@ -290,13 +298,14 @@ impl Parser {
                         tokens.remove(0);
                     }
                     Some(token) => {
-                        panic!(
+                        json_err!(
+                            Some,
                             "Invalid JSON: Expected colon after key in object, got {}",
                             token
                         );
                     }
                     None => {
-                        panic!("Invalid JSON: Unexpected end of file")
+                        json_err!(Some, "Invalid JSON: Unexpected end of file")
                     }
                 }
 
@@ -306,10 +315,10 @@ impl Parser {
                     if let Ok(json_value) = json_value {
                         object.set(key, json_value);
                     } else {
-                        return Some(json_err!(&json_value.unwrap_err().get_message()));
+                        json_err!(Some, &json_value.unwrap_err().get_message());
                     }
                 } else {
-                    return Some(json_err!("Invalid JSON: Unexpected end of file in object"));
+                    json_err!(Some, "Invalid JSON: Unexpected end of file in object");
                 }
 
                 match tokens.first() {
@@ -321,15 +330,18 @@ impl Parser {
                         tokens.remove(0);
                     }
                     Some(char) => {
-                        panic!("Invalid JSON: Unexpected character: {}", char)
+                        json_err!(Some, "Invalid JSON: Unexpected character: {}", char)
                     }
                     _ => {
-                        panic!("Invalid JSON: Unexpected end of file")
+                        json_err!(Some, "Invalid JSON: Unexpected end of file")
                     }
                 }
             }
 
-            panic!("Invalid JSON: Unexpected end of file before finding open curly bracket");
+            json_err!(
+                Some,
+                "Invalid JSON: Unexpected end of file before finding open curly bracket"
+            );
         }
         None
     }

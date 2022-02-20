@@ -19,7 +19,7 @@ impl Lexer {
                     tokens.push(string_token);
                     continue;
                 } else {
-                    return json_err!(result.unwrap_err().get_message());
+                    json_err!(result.unwrap_err().get_message());
                 }
             }
 
@@ -28,7 +28,7 @@ impl Lexer {
                     tokens.push(number_token);
                     continue;
                 } else {
-                    return json_err!(result.unwrap_err().get_message());
+                    json_err!(result.unwrap_err().get_message());
                 }
             }
 
@@ -37,7 +37,7 @@ impl Lexer {
                     tokens.push(boolean_token);
                     continue;
                 } else {
-                    return json_err!(result.unwrap_err().get_message());
+                    json_err!(result.unwrap_err().get_message());
                 }
             }
 
@@ -46,7 +46,7 @@ impl Lexer {
                     tokens.push(null_token);
                     continue;
                 } else {
-                    return json_err!(result.unwrap_err().get_message());
+                    json_err!(result.unwrap_err().get_message());
                 }
             }
 
@@ -80,10 +80,10 @@ impl Lexer {
                     json = json[1..].to_string();
                 }
                 "\"" => {
-                    return json_err!("Unexpected end of file: {}", json);
+                    json_err!("Unexpected end of file: {}", json);
                 }
                 char => {
-                    return json_err!("Unexpected character: {}", char);
+                    json_err!("Unexpected character: {}", char);
                 }
             }
         }
@@ -106,10 +106,11 @@ impl Lexer {
                     data.push(char);
                     escape = false;
                 } else {
-                    return Some(json_err!(
+                    json_err!(
+                        Some,
                         "Invalid JSON: Invalid escape of character: <{}>",
                         char.encode_utf8(&mut [0, 0])
-                    ));
+                    );
                 }
             } else {
                 if char == '\\' {
@@ -142,9 +143,10 @@ impl Lexer {
                     data.push(char);
                     continue;
                 }
-                return Some(json_err!(
+                json_err!(
+                    Some,
                     "Invalid JSON: Invalid position for character \"-\" in number"
-                ));
+                );
             }
 
             if char == 'e' || char == 'E' {
@@ -156,9 +158,10 @@ impl Lexer {
                     data.push(char);
                     continue;
                 }
-                return Some(json_err!(
+                json_err!(
+                    Some,
                     "Invalid JSON: Invalid position for character \"e\" in number"
-                ));
+                );
             }
 
             if char == '.' {
@@ -170,9 +173,10 @@ impl Lexer {
                     data.push(char);
                     continue;
                 }
-                return Some(json_err!(
+                json_err!(
+                    Some,
                     "Invalid JSON: Invalid position for character \".\" in number"
-                ));
+                );
             }
 
             break;

@@ -18,9 +18,15 @@ impl JSONError {
 #[macro_export]
 macro_rules! json_err {
 	($arg:expr) => {
-		Err($crate::json_error::JSONError::new($arg))
+		return Err($crate::json_error::JSONError::new($arg))
+	};
+	(Some, $arg:expr) => {
+		return Some(Err($crate::json_error::JSONError::new($arg)))
+	};
+	(Some, $($args:tt)*) => {
+		return Some(Err($crate::json_error::JSONError::new(&format!($($args)*))))
 	};
 	($($args:tt)*) => {
-		Err($crate::json_error::JSONError::new(&format!($($args)*)))
+		return Err($crate::json_error::JSONError::new(&format!($($args)*)))
 	}
 }
