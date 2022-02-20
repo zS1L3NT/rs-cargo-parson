@@ -125,7 +125,7 @@ impl Lexer {
             }
         }
 
-        None
+        json_err!(Some, "Invalid JSON: Unexpected end of string")
     }
 
     fn lex_number(&self, string: &mut String) -> Option<Result<Token, JSONError>> {
