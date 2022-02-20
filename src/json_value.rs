@@ -1,4 +1,7 @@
-use std::{fmt::Debug, str::FromStr};
+use std::{
+    fmt::{Debug, Display},
+    str::FromStr,
+};
 
 use crate::{
     json_err, json_error::JSONError, lexer::Lexer, parser::Parser, JSONArray, JSONBoolean,
@@ -37,6 +40,12 @@ impl FromStr for JSONValue {
         } else {
             json_err!(tokens.unwrap_err().get_message())
         }
+    }
+}
+
+impl Display for JSONValue {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "{}", self.to_string())
     }
 }
 

@@ -1,6 +1,14 @@
+use std::fmt::Display;
+
 #[derive(Debug, Clone)]
 pub struct JSONNumber {
     data: f64,
+}
+
+impl Display for JSONNumber {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "{}", self.to_string())
+    }
 }
 
 impl JSONNumber {

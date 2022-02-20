@@ -1,4 +1,4 @@
-use std::collections::HashMap;
+use std::{collections::HashMap, fmt::Display};
 
 use indexmap::{indexmap, IndexMap};
 
@@ -7,6 +7,12 @@ use crate::JSONValue;
 #[derive(Debug, Clone)]
 pub struct JSONObject {
     data: IndexMap<String, JSONValue>,
+}
+
+impl Display for JSONObject {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "{}", self.to_string())
+    }
 }
 
 impl JSONObject {

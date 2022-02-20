@@ -1,5 +1,13 @@
+use std::fmt::Display;
+
 #[derive(Debug, Clone)]
 pub struct JSONNull;
+
+impl Display for JSONNull {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "{}", self.to_string())
+    }
+}
 
 impl JSONNull {
     /// Create a new empty JSON Null

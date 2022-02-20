@@ -1,8 +1,16 @@
+use std::fmt::Display;
+
 use crate::JSONValue;
 
 #[derive(Debug, Clone)]
 pub struct JSONArray {
     data: Vec<JSONValue>,
+}
+
+impl Display for JSONArray {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "{}", self.to_string())
+    }
 }
 
 impl JSONArray {
