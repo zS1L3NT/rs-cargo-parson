@@ -1,9 +1,13 @@
 [package]
 name = "parson"
-version = "0.1.0"
+version = "1.0.0"
 edition = "2021"
-
-# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+description = "A simple JSON Parser"
+documentation = "https://www.github.com/zS1L3NT/rs-parson"
+repository = "https://www.github.com/zS1L3NT/rs-parson"
+license = "GPL-3.0"
+keywords = ["json", "parser"]
+categories = ["parser-implementations", "parsing"]
 
 [dependencies]
 indexmap = "1.8.0"
