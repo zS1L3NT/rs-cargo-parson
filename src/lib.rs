@@ -1,6 +1,6 @@
-//! # Parse JSON
+//! # Parson
 //!
-//! `parse-json` is a Rust library for parsing JSON strings into Rust types.
+//! `parson` is a Rust library for parsing JSON strings into Rust types.
 //!
 //! In this crate, a
 //! - JSON String is parsed into a Rust owned string

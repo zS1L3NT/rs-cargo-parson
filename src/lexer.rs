@@ -15,42 +15,38 @@ impl Lexer {
 
         while json.len() > 0 {
             if let Some(result) = self.lex_string(&mut json) {
-                match result {
-                    Ok(string_token) => {
-                        tokens.push(string_token);
-                        continue;
-                    }
-                    Err(json_error) => return Err(json_error),
+                if let Ok(string_token) = result {
+                    tokens.push(string_token);
+                    continue;
+                } else {
+                    return json_err!(result.unwrap_err().get_message());
                 }
             }
 
             if let Some(result) = self.lex_number(&mut json) {
-                match result {
-                    Ok(number_token) => {
-                        tokens.push(number_token);
-                        continue;
-                    }
-                    Err(json_error) => return Err(json_error),
+                if let Ok(number_token) = result {
+                    tokens.push(number_token);
+                    continue;
+                } else {
+                    return json_err!(result.unwrap_err().get_message());
                 }
             }
 
             if let Some(result) = self.lex_boolean(&mut json) {
-                match result {
-                    Ok(boolean_token) => {
-                        tokens.push(boolean_token);
-                        continue;
-                    }
-                    Err(json_error) => return Err(json_error),
+                if let Ok(boolean_token) = result {
+                    tokens.push(boolean_token);
+                    continue;
+                } else {
+                    return json_err!(result.unwrap_err().get_message());
                 }
             }
 
             if let Some(result) = self.lex_null(&mut json) {
-                match result {
-                    Ok(null_token) => {
-                        tokens.push(null_token);
-                        continue;
-                    }
-                    Err(json_error) => return Err(json_error),
+                if let Ok(null_token) = result {
+                    tokens.push(null_token);
+                    continue;
+                } else {
+                    return json_err!(result.unwrap_err().get_message());
                 }
             }
 

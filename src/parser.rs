@@ -93,35 +93,41 @@ impl Parser {
         stop_tokens: &Vec<Token>,
     ) -> Option<Result<JSONValue, JSONError>> {
         if let Some(result) = self.parse_string(tokens, &stop_tokens) {
-            Some(match result {
-                Ok(results) => Ok(JSONValue::from_string(results.0)),
-                Err(json_error) => Err(json_error),
-            })
+            if let Ok(results) = result {
+                Some(Ok(JSONValue::from_string(results.0)))
+            } else {
+                Some(json_err!(result.unwrap_err().get_message()))
+            }
         } else if let Some(result) = self.parse_number(tokens, &stop_tokens) {
-            Some(match result {
-                Ok(results) => Ok(JSONValue::from_number(results.0)),
-                Err(json_error) => Err(json_error),
-            })
+            if let Ok(results) = result {
+                Some(Ok(JSONValue::from_number(results.0)))
+            } else {
+                Some(json_err!(result.unwrap_err().get_message()))
+            }
         } else if let Some(result) = self.parse_boolean(tokens, &stop_tokens) {
-            Some(match result {
-                Ok(results) => Ok(JSONValue::from_boolean(results.0)),
-                Err(json_error) => Err(json_error),
-            })
+            if let Ok(results) = result {
+                Some(Ok(JSONValue::from_boolean(results.0)))
+            } else {
+                Some(json_err!(result.unwrap_err().get_message()))
+            }
         } else if let Some(result) = self.parse_null(tokens, &stop_tokens) {
-            Some(match result {
-                Ok(results) => Ok(JSONValue::from_null(results.0)),
-                Err(json_error) => Err(json_error),
-            })
+            if let Ok(results) = result {
+                Some(Ok(JSONValue::from_null(results.0)))
+            } else {
+                Some(json_err!(result.unwrap_err().get_message()))
+            }
         } else if let Some(result) = self.parse_array(tokens) {
-            Some(match result {
-                Ok(json_array) => Ok(JSONValue::from_array(json_array)),
-                Err(json_error) => Err(json_error),
-            })
+            if let Ok(results) = result {
+                Some(Ok(JSONValue::from_array(results)))
+            } else {
+                Some(json_err!(result.unwrap_err().get_message()))
+            }
         } else if let Some(result) = self.parse_object(tokens) {
-            Some(match result {
-                Ok(json_object) => Ok(JSONValue::from_object(json_object)),
-                Err(json_error) => Err(json_error),
-            })
+            if let Ok(results) = result {
+                Some(Ok(JSONValue::from_object(results)))
+            } else {
+                Some(json_err!(result.unwrap_err().get_message()))
+            }
         } else {
             None
         }
@@ -133,22 +139,19 @@ impl Parser {
         stop_tokens: &Vec<Token>,
     ) -> Option<Result<(JSONString, Token), JSONError>> {
         let tokens_cl = tokens.clone();
-
-        match tokens_cl.first() {
-            Some(Token::String(string)) => {
-                if let Some(second_token) = tokens_cl.get(1) {
-                    if stop_tokens.contains(second_token) {
-                        tokens.remove(0);
-                        return Some(Ok((JSONString::new(string.clone()), second_token.clone())));
-                    }
+        if let Some(Token::String(string)) = tokens_cl.first() {
+            if let Some(second_token) = tokens_cl.get(1) {
+                if stop_tokens.contains(second_token) {
+                    tokens.remove(0);
+                    return Some(Ok((JSONString::new(string.clone()), second_token.clone())));
                 }
-                Some(json_err!(
-                    "Invalid JSON: Unexpected end of file after string: {}",
-                    string,
-                ))
             }
-            _ => None,
+            return Some(json_err!(
+                "Invalid JSON: Unexpected end of file after string: {}",
+                string,
+            ));
         }
+        None
     }
 
     fn parse_number(
@@ -158,21 +161,19 @@ impl Parser {
     ) -> Option<Result<(JSONNumber, Token), JSONError>> {
         let tokens_cl = tokens.clone();
 
-        match tokens_cl.first() {
-            Some(Token::Number(number)) => {
-                if let Some(second_token) = tokens_cl.get(1) {
-                    if stop_tokens.contains(second_token) {
-                        tokens.remove(0);
-                        return Some(Ok((JSONNumber::new(*number), second_token.clone())));
-                    }
+        if let Some(Token::Number(number)) = tokens_cl.first() {
+            if let Some(second_token) = tokens_cl.get(1) {
+                if stop_tokens.contains(second_token) {
+                    tokens.remove(0);
+                    return Some(Ok((JSONNumber::new(*number), second_token.clone())));
                 }
-                Some(json_err!(
-                    "Invalid JSON: Unexpected end of file after number: {}",
-                    number,
-                ))
             }
-            _ => None,
+            return Some(json_err!(
+                "Invalid JSON: Unexpected end of file after number: {}",
+                number,
+            ));
         }
+        None
     }
 
     fn parse_boolean(
@@ -182,21 +183,19 @@ impl Parser {
     ) -> Option<Result<(JSONBoolean, Token), JSONError>> {
         let tokens_cl = tokens.clone();
 
-        match tokens_cl.first() {
-            Some(Token::Boolean(boolean)) => {
-                if let Some(second_token) = tokens_cl.get(1) {
-                    if stop_tokens.contains(second_token) {
-                        tokens.remove(0);
-                        return Some(Ok((JSONBoolean::new(*boolean), second_token.clone())));
-                    }
+        if let Some(Token::Boolean(boolean)) = tokens_cl.first() {
+            if let Some(second_token) = tokens_cl.get(1) {
+                if stop_tokens.contains(second_token) {
+                    tokens.remove(0);
+                    return Some(Ok((JSONBoolean::new(*boolean), second_token.clone())));
                 }
-                Some(json_err!(
-                    "Invalid JSON: Unexpected end of file after boolean: {}",
-                    boolean,
-                ))
             }
-            _ => None,
+            return Some(json_err!(
+                "Invalid JSON: Unexpected end of file after boolean: {}",
+                boolean,
+            ));
         }
+        None
     }
 
     fn parse_null(
@@ -206,144 +205,132 @@ impl Parser {
     ) -> Option<Result<(JSONNull, Token), JSONError>> {
         let tokens_cl = tokens.clone();
 
-        match tokens_cl.first() {
-            Some(Token::Null) => {
-                if let Some(second_token) = tokens_cl.get(1) {
-                    if stop_tokens.contains(second_token) {
-                        tokens.remove(0);
-                        return Some(Ok((JSONNull::new(), second_token.clone())));
-                    }
+        if let Some(Token::Null) = tokens_cl.first() {
+            if let Some(second_token) = tokens_cl.get(1) {
+                if stop_tokens.contains(second_token) {
+                    tokens.remove(0);
+                    return Some(Ok((JSONNull::new(), second_token.clone())));
                 }
-                Some(json_err!("Invalid JSON: Unexpected end of file after null"))
             }
-            _ => None,
+            return Some(json_err!("Invalid JSON: Unexpected end of file after null"));
         }
+        None
     }
 
     fn parse_array(&self, tokens: &mut Vec<Token>) -> Option<Result<JSONArray, JSONError>> {
-        match tokens.first() {
-            Some(Token::OpenSquareBracket) => {
+        if let Some(Token::OpenSquareBracket) = tokens.first() {
+            tokens.remove(0);
+            let mut array = JSONArray::new();
+
+            if let Some(Token::CloseSquareBracket) = tokens.first() {
                 tokens.remove(0);
-                let mut array = JSONArray::new();
+                return Some(Ok(array));
+            }
+
+            while tokens.len() > 0 {
+                let json_value =
+                    self.parse_value(tokens, &vec![Token::CloseSquareBracket, Token::Comma]);
+                if let Some(json_value) = json_value {
+                    if let Ok(json_value) = json_value {
+                        array.push(json_value);
+                    } else {
+                        return Some(json_err!(&json_value.unwrap_err().get_message()));
+                    }
+                } else {
+                    return Some(json_err!("Invalid JSON: Unexpected end of file in array"));
+                }
 
                 match tokens.first() {
                     Some(Token::CloseSquareBracket) => {
                         tokens.remove(0);
                         return Some(Ok(array));
                     }
-                    _ => {}
-                }
-
-                while tokens.len() > 0 {
-                    let json_value =
-                        self.parse_value(tokens, &vec![Token::CloseSquareBracket, Token::Comma]);
-                    if let Some(json_value) = json_value {
-                        if let Ok(json_value) = json_value {
-                            array.push(json_value);
-                        } else {
-                            return Some(json_err!(&json_value.unwrap_err().get_message()));
-                        }
-                    } else {
-                        return Some(json_err!("Invalid JSON: Unexpected end of file in array"));
+                    Some(Token::Comma) => {
+                        tokens.remove(0);
                     }
-
-                    match tokens.first() {
-                        Some(Token::CloseSquareBracket) => {
-                            tokens.remove(0);
-                            return Some(Ok(array));
-                        }
-                        Some(Token::Comma) => {
-                            tokens.remove(0);
-                        }
-                        Some(char) => {
-                            panic!("Invalid JSON: Unexpected character: {}", char)
-                        }
-                        _ => {
-                            panic!("Invalid JSON: Unexpected end of file")
-                        }
+                    Some(char) => {
+                        panic!("Invalid JSON: Unexpected character: {}", char)
+                    }
+                    _ => {
+                        panic!("Invalid JSON: Unexpected end of file")
                     }
                 }
-
-                panic!("Invalid JSON: Unexpected end of file before finding open square bracket");
             }
-            _ => None,
+
+            panic!("Invalid JSON: Unexpected end of file before finding open square bracket");
         }
+        None
     }
 
     fn parse_object(&self, tokens: &mut Vec<Token>) -> Option<Result<JSONObject, JSONError>> {
-        match tokens.first() {
-            Some(Token::OpenCurlyBracket) => {
+        if let Some(Token::OpenCurlyBracket) = tokens.first() {
+            tokens.remove(0);
+            let mut object = JSONObject::new();
+
+            if let Some(Token::CloseCurlyBracket) = tokens.first() {
                 tokens.remove(0);
-                let mut object = JSONObject::new();
+                return Some(Ok(object));
+            }
+
+            while tokens.len() > 0 {
+                let tokens_cl = tokens.clone();
+                let key = tokens_cl.first().unwrap();
+                let key = match key {
+                    Token::String(string) => {
+                        tokens.remove(0);
+                        string.clone()
+                    }
+                    _ => {
+                        panic!("Invalid JSON: Expected string key in object, got {}", key);
+                    }
+                };
+
+                match tokens.first() {
+                    Some(Token::Colon) => {
+                        tokens.remove(0);
+                    }
+                    Some(token) => {
+                        panic!(
+                            "Invalid JSON: Expected colon after key in object, got {}",
+                            token
+                        );
+                    }
+                    None => {
+                        panic!("Invalid JSON: Unexpected end of file")
+                    }
+                }
+
+                let json_value =
+                    self.parse_value(tokens, &vec![Token::CloseCurlyBracket, Token::Comma]);
+                if let Some(json_value) = json_value {
+                    if let Ok(json_value) = json_value {
+                        object.set(key, json_value);
+                    } else {
+                        return Some(json_err!(&json_value.unwrap_err().get_message()));
+                    }
+                } else {
+                    return Some(json_err!("Invalid JSON: Unexpected end of file in object"));
+                }
 
                 match tokens.first() {
                     Some(Token::CloseCurlyBracket) => {
                         tokens.remove(0);
                         return Some(Ok(object));
                     }
-                    _ => {}
-                }
-
-                while tokens.len() > 0 {
-                    let tokens_cl = tokens.clone();
-                    let key = tokens_cl.first().unwrap();
-                    let key = match key {
-                        Token::String(string) => {
-                            tokens.remove(0);
-                            string.clone()
-                        }
-                        _ => {
-                            panic!("Invalid JSON: Expected string key in object, got {}", key);
-                        }
-                    };
-
-                    match tokens.first() {
-                        Some(Token::Colon) => {
-                            tokens.remove(0);
-                        }
-                        Some(token) => {
-                            panic!(
-                                "Invalid JSON: Expected colon after key in object, got {}",
-                                token
-                            );
-                        }
-                        None => {
-                            panic!("Invalid JSON: Unexpected end of file")
-                        }
+                    Some(Token::Comma) => {
+                        tokens.remove(0);
                     }
-
-                    let json_value =
-                        self.parse_value(tokens, &vec![Token::CloseCurlyBracket, Token::Comma]);
-                    if let Some(json_value) = json_value {
-                        if let Ok(json_value) = json_value {
-                            object.set(key, json_value);
-                        } else {
-                            return Some(json_err!(&json_value.unwrap_err().get_message()));
-                        }
-                    } else {
-                        return Some(json_err!("Invalid JSON: Unexpected end of file in object"));
+                    Some(char) => {
+                        panic!("Invalid JSON: Unexpected character: {}", char)
                     }
-
-                    match tokens.first() {
-                        Some(Token::CloseCurlyBracket) => {
-                            tokens.remove(0);
-                            return Some(Ok(object));
-                        }
-                        Some(Token::Comma) => {
-                            tokens.remove(0);
-                        }
-                        Some(char) => {
-                            panic!("Invalid JSON: Unexpected character: {}", char)
-                        }
-                        _ => {
-                            panic!("Invalid JSON: Unexpected end of file")
-                        }
+                    _ => {
+                        panic!("Invalid JSON: Unexpected end of file")
                     }
                 }
-
-                panic!("Invalid JSON: Unexpected end of file before finding open curly bracket");
             }
-            _ => None,
+
+            panic!("Invalid JSON: Unexpected end of file before finding open curly bracket");
         }
+        None
     }
 }
