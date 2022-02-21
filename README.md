@@ -15,6 +15,8 @@ My interest in Rust is growing rapidly due to my boredom of TypeScript and Web D
     -   A JSON Number parses into a Rust f64
     -   A JSON Boolean parses into a Rust bool
     -   A JSON Null is not parsable into Rust since there is no Null value
+-   Error Messages
+    -   Parser will let you know on what line and column the parsing error occured on
 
 ## Installation
 
