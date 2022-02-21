@@ -109,10 +109,10 @@ impl Lexer {
                     column += 1;
                 }
                 "\"" => {
-                    json_err!("Unexpected end of file: {}", json; line, column);
+                    json_err!("Unexpected end of file <{}>", json; line, column);
                 }
                 char => {
-                    json_err!("Unexpected character: {}", char; line, column);
+                    json_err!("Unexpected character <{}>", char; line, column);
                 }
             }
         }
@@ -141,7 +141,7 @@ impl Lexer {
                     escape = false;
                 } else {
                     json_err!(
-                        Some; "Invalid JSON: Invalid escape of character: <{}>", char.encode_utf8(&mut [0, 0]); line, column
+                        Some; "Invalid escape of character <{}>", char.encode_utf8(&mut [0, 0]); line, column
                     )
                 }
             } else {
@@ -161,7 +161,7 @@ impl Lexer {
             }
         }
 
-        json_err!(Some; "Invalid JSON: Unexpected end of string"; line, column)
+        json_err!(Some; "Unexpected end of string"; line, column)
     }
 
     fn lex_number(
@@ -186,7 +186,7 @@ impl Lexer {
                 }
                 json_err!(
                     Some;
-                    "Invalid JSON: Invalid position for character \"-\" in number";
+                    "Invalid character in number <->";
                     line,
                     column
                 );
@@ -203,7 +203,7 @@ impl Lexer {
                 }
                 json_err!(
                     Some;
-                    "Invalid JSON: Invalid position for character \"e\" in number";
+                    "Invalid character in number <e>";
                     line,
                     column
                 );
@@ -220,7 +220,7 @@ impl Lexer {
                 }
                 json_err!(
                     Some;
-                    "Invalid JSON: Invalid position for character \".\" in number";
+                    "Invalid character in number <.>";
                     line,
                     column
                 );
@@ -251,10 +251,7 @@ impl Lexer {
             Some(Ok((Token::new(TokenType::Boolean(true), line, column), 4)))
         } else if string.len() > 5 && string.starts_with("false") {
             *string = string[5..].to_string();
-            Some(Ok((
-                Token::new(TokenType::Boolean(false), line, column),
-                5,
-            )))
+            Some(Ok((Token::new(TokenType::Boolean(false), line, column), 5)))
         } else {
             None
         }

@@ -29,7 +29,7 @@ impl Parser {
                             json_err!(json_array.unwrap_err())
                         }
                     } else {
-                        json_err!("Invalid JSON: First token of array not ["; token.line, token.column)
+                        json_err!("First token of array not <[>"; token.line, token.column)
                     }
                 }
                 TokenType::OpenCurlyBracket => {
@@ -41,28 +41,28 @@ impl Parser {
                             json_err!(json_object.unwrap_err())
                         }
                     } else {
-                        json_err!("Invalid JSON: First token of object not {{"; token.line, token.column)
+                        json_err!("First token of object not <{>"; token.line, token.column)
                     }
                 }
                 TokenType::String(string) => {
                     if tokens.len() == 1 {
                         Ok(JSONValue::from_string(JSONString::new(string.clone())))
                     } else {
-                        json_err!("Invalid JSON: Expected end of file after \"{}\"", string; token.line, token.column)
+                        json_err!("Expected end of file, got <{}>", string; token.line, token.column)
                     }
                 }
                 TokenType::Number(number) => {
                     if tokens.len() == 1 {
                         Ok(JSONValue::from_number(JSONNumber::new(*number)))
                     } else {
-                        json_err!("Invalid JSON: Expected end of file after {}", number; token.line, token.column)
+                        json_err!("Expected end of file, got <{}>", number; token.line, token.column)
                     }
                 }
                 TokenType::Boolean(boolean) => {
                     if tokens.len() == 1 {
                         Ok(JSONValue::from_boolean(JSONBoolean::new(*boolean)))
                     } else {
-                        json_err!("Invalid JSON: Expected end of file after {}", boolean; token.line, token.column)
+                        json_err!("Expected end of file, got <{}>", boolean; token.line, token.column)
                     }
                 }
                 TokenType::Null => {
@@ -70,27 +70,27 @@ impl Parser {
                         Ok(JSONValue::from_null(JSONNull::new()))
                     } else {
                         json_err!(
-                            "Invalid JSON: Expected end of file after null";
+                            "Expected end of file, got <null>";
                             token.line,
                             token.column
                         )
                     }
                 }
                 TokenType::CloseCurlyBracket => {
-                    json_err!("Invalid JSON: Unexpected start of file: {{"; token.line, token.column)
+                    json_err!("Unexpected start of file <{>"; token.line, token.column)
                 }
                 TokenType::CloseSquareBracket => {
-                    json_err!("Invalid JSON: Unexpected start of file: }}"; token.line, token.column)
+                    json_err!("Unexpected start of file <}>"; token.line, token.column)
                 }
                 TokenType::Colon => {
-                    json_err!("Invalid JSON: Unexpected start of file: :"; token.line, token.column)
+                    json_err!("Unexpected start of file <:>"; token.line, token.column)
                 }
                 TokenType::Comma => {
-                    json_err!("Invalid JSON: Unexpected start of file: ,"; token.line, token.column)
+                    json_err!("Unexpected start of file <,>"; token.line, token.column)
                 }
             }
         } else {
-            json_err!("Invalid JSON: No tokens found"; 1, 1)
+            json_err!("No tokens found"; 1, 1)
         }
     }
 
@@ -156,7 +156,7 @@ impl Parser {
                 }
                 json_err!(
                     Some;
-                    "Invalid JSON: Unexpected end of file after string: {}",
+                    "Unexpected end of file <{}>",
                     string;
                     token.line,
                     token.column
@@ -182,7 +182,7 @@ impl Parser {
                 }
                 json_err!(
                     Some;
-                    "Invalid JSON: Unexpected end of file after number: {}",
+                    "Unexpected end of file <{}>",
                     number;
                     token.line,
                     token.column
@@ -209,7 +209,7 @@ impl Parser {
                 }
                 json_err!(
                     Some;
-                    "Invalid JSON: Unexpected end of file after boolean: {}",
+                    "Unexpected end of file <{}>",
                     boolean;
                     token.line,
                     token.column
@@ -234,7 +234,7 @@ impl Parser {
                         return Some(Ok((JSONNull::new(), second_token.clone())));
                     }
                 }
-                json_err!(Some; "Invalid JSON: Unexpected end of file after null"; token.line, token.column)
+                json_err!(Some; "Unexpected end of file <null>"; token.line, token.column)
             }
         }
         None
@@ -266,7 +266,7 @@ impl Parser {
                             json_err!(Some; json_value.unwrap_err())
                         }
                     } else {
-                        json_err!(Some; "Invalid JSON: Unexpected end of file in array"; token.line, token.column)
+                        json_err!(Some; "Unexpected end of file"; token.line, token.column)
                     }
 
                     if let Some(token) = tokens.first() {
@@ -279,17 +279,17 @@ impl Parser {
                                 tokens.remove(0);
                             }
                             char => {
-                                json_err!(Some; "Invalid JSON: Unexpected character: {}", char; token.line, token.column)
+                                json_err!(Some; "Unexpected character <{}>", char; token.line, token.column)
                             }
                         }
                     } else {
-                        json_err!(Some; "Invalid JSON: Unexpected end of file"; token.line, token.column)
+                        json_err!(Some; "Unexpected end of file"; token.line, token.column)
                     }
                 }
 
                 json_err!(
                     Some;
-                    "Invalid JSON: Unexpected end of file before finding open square bracket"; token.line, token.column
+                    "Unexpected end of file before finding open square bracket"; token.line, token.column
                 )
             }
         }
@@ -319,7 +319,7 @@ impl Parser {
                     } else {
                         json_err!(
                             Some;
-                            "Invalid JSON: Expected string key in object, got {}",
+                            "Expected string key in object, got <{}>",
                             token.token_type;
                             token.line, token.column
                         )
@@ -331,12 +331,12 @@ impl Parser {
                         } else {
                             json_err!(
                                 Some;
-                                "Invalid JSON: Expected colon after key in object, got {}",
+                                "Expected colon after key in object, got <{}>",
                                 token.token_type; token.line, token.column
                             )
                         }
                     } else {
-                        json_err!(Some; "Invalid JSON: Unexpected end of file"; token.line, token.column)
+                        json_err!(Some; "Unexpected end of file"; token.line, token.column)
                     }
 
                     let json_value = self.parse_value(
@@ -350,7 +350,7 @@ impl Parser {
                             json_err!(Some; json_value.unwrap_err())
                         }
                     } else {
-                        json_err!(Some; "Invalid JSON: Unexpected end of file in object"; token.line, token.column);
+                        json_err!(Some; "Unexpected end of file"; token.line, token.column);
                     }
 
                     if let Some(token) = tokens.first() {
@@ -363,17 +363,17 @@ impl Parser {
                                 tokens.remove(0);
                             }
                             char => {
-                                json_err!(Some; "Invalid JSON: Unexpected character: {}", char; token.line, token.column)
+                                json_err!(Some; "Unexpected character <{}>", char; token.line, token.column)
                             }
                         }
                     } else {
-                        json_err!(Some; "Invalid JSON: Unexpected end of file"; token.line, token.column)
+                        json_err!(Some; "Unexpected end of file"; token.line, token.column)
                     }
                 }
 
                 json_err!(
                     Some;
-                    "Invalid JSON: Unexpected end of file before finding open curly bracket";
+                    "Unexpected end of file before finding open curly bracket";
                     token.line, token.column
                 );
             }

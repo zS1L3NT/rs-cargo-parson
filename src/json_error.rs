@@ -1,15 +1,20 @@
-use std::fmt::Display;
+use std::fmt::{Debug, Display};
 
-#[derive(Debug)]
 pub struct JSONError {
     message: String,
     line: usize,
     column: usize,
 }
 
+impl Debug for JSONError {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "{}", self.get_message())
+    }
+}
+
 impl Display for JSONError {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        write!(f, "{}", self.message)
+        write!(f, "{}", self.get_message())
     }
 }
 
@@ -22,8 +27,11 @@ impl JSONError {
         }
     }
 
-    pub fn get_message(&self) -> &str {
-        &self.message[..]
+    pub fn get_message(&self) -> String {
+        format!(
+            "{} (line {} column {})",
+            self.message, self.line, self.column
+        )
     }
 }
 
