@@ -3,6 +3,8 @@ use std::fmt::Display;
 #[derive(Debug)]
 pub struct JSONError {
     message: String,
+    line: usize,
+    column: usize,
 }
 
 impl Display for JSONError {
@@ -12,9 +14,11 @@ impl Display for JSONError {
 }
 
 impl JSONError {
-    pub fn new(message: &str) -> Self {
+    pub fn new(message: &str, line: usize, column: usize) -> Self {
         JSONError {
             message: message.to_string(),
+            line,
+            column,
         }
     }
 
@@ -25,16 +29,22 @@ impl JSONError {
 
 #[macro_export]
 macro_rules! json_err {
-	($arg:expr) => {
-		return Err($crate::json_error::JSONError::new($arg))
+	(Some; $error:expr) => {
+		return Some(Err($error))
 	};
-	(Some, $arg:expr) => {
-		return Some(Err($crate::json_error::JSONError::new($arg)))
+	($error:expr) => {
+		return Err($error)
 	};
-	(Some, $($args:tt)*) => {
-		return Some(Err($crate::json_error::JSONError::new(&format!($($args)*))))
+	(Some; $message:expr; $line:expr, $column:expr) => {
+		return Some(Err($crate::json_error::JSONError::new($message, $line, $column)))
 	};
-	($($args:tt)*) => {
-		return Err($crate::json_error::JSONError::new(&format!($($args)*)))
+	($message:expr; $line:expr, $column:expr) => {
+		return Err($crate::json_error::JSONError::new($message, $line, $column))
+	};
+	(Some; $($slices:expr),*; $line:expr, $column:expr) => {
+		return Some(Err($crate::json_error::JSONError::new(&format!($($slices),*), $line, $column)))
+	};
+	($($slices:expr),*; $line:expr, $column:expr) => {
+		return Err($crate::json_error::JSONError::new(&format!($($slices),*), $line, $column))
 	}
 }

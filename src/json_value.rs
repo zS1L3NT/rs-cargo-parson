@@ -35,10 +35,10 @@ impl FromStr for JSONValue {
             if let Ok(json_value) = json_value {
                 Ok(json_value)
             } else {
-                json_err!(json_value.unwrap_err().get_message())
+                json_err!(json_value.unwrap_err())
             }
         } else {
-            json_err!(tokens.unwrap_err().get_message())
+            json_err!(tokens.unwrap_err())
         }
     }
 }
@@ -167,7 +167,7 @@ impl JSONValue {
     pub fn get_string(&self) -> Result<String, JSONError> {
         match &self.data {
             JSONType::String(json_string) => Ok(json_string.get_string()),
-            _ => json_err!("JSONValue::get_string() called on non-string value"),
+            _ => json_err!("JSONValue::get_string() called on non-string value"; 0, 0),
         }
     }
 
@@ -175,7 +175,7 @@ impl JSONValue {
     pub fn get_number(&self) -> Result<f64, JSONError> {
         match &self.data {
             JSONType::Number(json_number) => Ok(json_number.get_number()),
-            _ => json_err!("JSONValue::get_number() called on non-number value"),
+            _ => json_err!("JSONValue::get_number() called on non-number value"; 0, 0),
         }
     }
 
@@ -183,7 +183,7 @@ impl JSONValue {
     pub fn get_boolean(&self) -> Result<bool, JSONError> {
         match &self.data {
             JSONType::Boolean(json_boolean) => Ok(json_boolean.get_boolean()),
-            _ => json_err!("JSONValue::get_boolean() called on non-boolean value"),
+            _ => json_err!("JSONValue::get_boolean() called on non-boolean value"; 0, 0),
         }
     }
 
@@ -191,7 +191,7 @@ impl JSONValue {
     pub fn get_null(&self) -> Result<&JSONNull, JSONError> {
         match &self.data {
             JSONType::Null(json_null) => Ok(json_null),
-            _ => json_err!("JSONValue::get_null() called on non-null value"),
+            _ => json_err!("JSONValue::get_null() called on non-null value"; 0, 0),
         }
     }
 
@@ -199,7 +199,7 @@ impl JSONValue {
     pub fn get_array(&self) -> Result<&JSONArray, JSONError> {
         match &self.data {
             JSONType::Array(json_array) => Ok(json_array),
-            _ => json_err!("JSONValue::get_array() called on non-array value"),
+            _ => json_err!("JSONValue::get_array() called on non-array value"; 0, 0),
         }
     }
 
@@ -207,7 +207,7 @@ impl JSONValue {
     pub fn get_object(&self) -> Result<&JSONObject, JSONError> {
         match &self.data {
             JSONType::Object(json_object) => Ok(json_object),
-            _ => json_err!("JSONValue::get_object() called on non-object value"),
+            _ => json_err!("JSONValue::get_object() called on non-object value"; 0, 0),
         }
     }
 
