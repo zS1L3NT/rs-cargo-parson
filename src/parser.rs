@@ -147,7 +147,7 @@ impl Parser {
     ) -> Option<Result<(JSONString, Token), JSONError>> {
         let tokens_cl = tokens.clone();
         if let Some(token) = tokens_cl.first() {
-            if let TokenType::String(string) = token.token_type {
+            if let TokenType::String(string) = &token.token_type {
                 if let Some(second_token) = tokens_cl.get(1) {
                     if stop_token_types.contains(&second_token.token_type) {
                         tokens.remove(0);
@@ -242,6 +242,7 @@ impl Parser {
 
     fn parse_array(&self, tokens: &mut Vec<Token>) -> Option<Result<JSONArray, JSONError>> {
         if let Some(token) = tokens.first() {
+            let token = token.clone();
             if let TokenType::OpenSquareBracket = token.token_type {
                 tokens.remove(0);
                 let mut array = JSONArray::new();
@@ -269,7 +270,7 @@ impl Parser {
                     }
 
                     if let Some(token) = tokens.first() {
-                        match token.token_type {
+                        match &token.token_type {
                             TokenType::CloseSquareBracket => {
                                 tokens.remove(0);
                                 return Some(Ok(array));
@@ -297,6 +298,7 @@ impl Parser {
 
     fn parse_object(&self, tokens: &mut Vec<Token>) -> Option<Result<JSONObject, JSONError>> {
         if let Some(token) = tokens.first() {
+            let token = token.clone();
             if let TokenType::OpenCurlyBracket = token.token_type {
                 tokens.remove(0);
                 let mut object = JSONObject::new();
@@ -311,7 +313,7 @@ impl Parser {
                 while tokens.len() > 0 {
                     let tokens_cl = tokens.clone();
                     let token = tokens_cl.first().unwrap();
-                    let key = if let TokenType::String(string) = token.token_type {
+                    let key = if let TokenType::String(string) = &token.token_type {
                         tokens.remove(0);
                         string.clone()
                     } else {
@@ -352,7 +354,7 @@ impl Parser {
                     }
 
                     if let Some(token) = tokens.first() {
-                        match token.token_type {
+                        match &token.token_type {
                             TokenType::CloseCurlyBracket => {
                                 tokens.remove(0);
                                 return Some(Ok(object));
@@ -363,7 +365,6 @@ impl Parser {
                             char => {
                                 json_err!(Some; "Invalid JSON: Unexpected character: {}", char; token.line, token.column)
                             }
-                            _ => {}
                         }
                     } else {
                         json_err!(Some; "Invalid JSON: Unexpected end of file"; token.line, token.column)
