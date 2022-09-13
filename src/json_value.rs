@@ -330,4 +330,15 @@ impl JSONValue {
             JSONType::Object(json_object) => json_object.to_string(),
         }
     }
+
+    pub fn format_string(&self, indents: i32, spaces: i32) -> String {
+        match &self.data {
+            JSONType::String(json_string) => json_string.to_string(),
+            JSONType::Number(json_number) => json_number.to_string(),
+            JSONType::Boolean(json_boolean) => json_boolean.to_string(),
+            JSONType::Null(json_null) => json_null.to_string(),
+            JSONType::Array(json_array) => json_array.format_string(indents, spaces),
+            JSONType::Object(json_object) => json_object.format_string(indents, spaces),
+        }
+    }
 }

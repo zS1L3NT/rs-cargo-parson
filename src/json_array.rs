@@ -49,6 +49,25 @@ impl JSONArray {
         result
     }
 
+    pub fn format_string(&self, indents: i32, spaces: i32) -> String {
+        if self.data.len() == 0 {
+            return String::from("[]");
+        }
+
+        let mut result = "[".to_string();
+
+        for value in self.data.iter() {
+            result.push_str(&format!(
+                "\n{}{},",
+                " ".repeat(((indents + 1) * spaces) as usize),
+                value.format_string(indents + 1, spaces)
+            ));
+        }
+
+        result.push_str(&format!("\n{}]", " ".repeat((indents * spaces) as usize)));
+        result
+    }
+
     /// Convert JSON Array to a Rust Vector
     pub fn to_vec(&self) -> Vec<JSONValue> {
         self.data.clone()

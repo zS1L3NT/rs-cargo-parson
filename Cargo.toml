@@ -1,6 +1,6 @@
 [package]
 name = "parson"
-version = "1.0.1"
+version = "1.1.0"
 edition = "2021"
 description = "A crate for parsing JSON into Rust types"
 documentation = "https://www.github.com/zS1L3NT/rs-parson"

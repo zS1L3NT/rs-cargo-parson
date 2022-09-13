@@ -51,6 +51,27 @@ impl JSONObject {
         result
     }
 
+	/// Format JSON Object to a Rust owned string
+    pub fn format_string(&self, indents: i32, spaces: i32) -> String {
+        if self.data.len() == 0 {
+            return String::from("{}");
+        }
+
+        let mut result = "{".to_string();
+
+        for (key, value) in self.data.iter() {
+            result.push_str(&format!(
+                "\n{}\"{}\": {},",
+                " ".repeat(((indents + 1) * spaces) as usize),
+                key,
+                value.format_string(indents + 1, spaces)
+            ));
+        }
+
+        result.push_str(&format!("\n{}}}", " ".repeat((indents * spaces) as usize)));
+        result
+    }
+
     /// Convert JSON Object to a Rust HashMap
     pub fn to_hashmap(&self) -> HashMap<String, JSONValue> {
         self.data
